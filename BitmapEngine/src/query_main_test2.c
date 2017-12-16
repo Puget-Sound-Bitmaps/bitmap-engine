@@ -18,8 +18,13 @@ int main(int argc, char*argv[])
 
 	unsigned int col2Size;
 
+<<<<<<< HEAD:BitmapEngine/src/query_main_test2.c
 	int option = 1; //use hard coded or read file
 	int option2 = 7;
+=======
+	int option = 0; //use hard coded or read file
+	int option2 = 0;
+>>>>>>> b78626c5848d84fce9fe74280982ffaf15652a72:BitmapEngine/src/query_main_test.c
 
 	if(!option)
 	{
@@ -94,7 +99,7 @@ int main(int argc, char*argv[])
 			col1 = test1;
 			col2 = test2;
 		}
-		else if(option2 == 3)
+		else if(option2 == 2)
 		{
 			char test1[11];
 			char test2[11];
@@ -140,7 +145,7 @@ int main(int argc, char*argv[])
 			col1 = test1;
 			col2 = test2;
 		}
-		else if(option2 == 4)
+		else if(option2 == 3)
 		{
 			char test1[1];
 			char test2[2];
@@ -157,28 +162,29 @@ int main(int argc, char*argv[])
 			col2 = test2;
 		}
 
-		else if(option2 == 5)
+		else if(option2 == 4)
 		{
-			char test1[16];
-			char test2[14];
+			char test1[2];
+			char test2[17];
 
 			//run
-			test1[0] = 0b10111111;
-			test1[1] = 0b10101010;
-			test1[2] = 0b01000111;
-			test1[3] = 0b00100101;
-			test1[4] = 0b01101001;
-			test1[5] = 0b10010101;
-			test1[6] = 0b11101101;
-			test1[7] = 0b00010001;
-			test1[8] = 0b10010010;
-			test1[9] = 0b10101000;
-			test1[10] = 0b00011100;
-			test1[11] = 0b11001110;
-			test1[12] = 0b01101101;
-			test1[13] = 0b01101100;
-			test1[14] = 0b01101111;
-			test1[15] = 0b10010011;
+			test1[0] = 0b00010000;
+			test1[1] = 0b00010100;
+			//test1[2] = 0b10101010;
+			//test1[3] = 0b01000111;
+			//test1[4] = 0b00100101;
+			//test1[5] = 0b01101001;
+			//test1[6] = 0b10010101;
+			//test1[7] = 0b11101101;
+			//test1[8] = 0b00010001;
+			//test1[9] = 0b10010010;
+			//test1[10] = 0b10101000;
+			//test1[11] = 0b00011100;
+			//test1[12] = 0b11001110;
+			//test1[13] = 0b01101101;
+			//test1[14] = 0b01101100;
+			//test1[15] = 0b01101111;
+			//test1[16] = 0b10010011;
 
 			//run
 			test2[0] = 0b01010111;
@@ -197,13 +203,17 @@ int main(int argc, char*argv[])
 			test2[9] = 0b11101101;
 
 			//run
-			test2[10] = 0b10100111;
+			test2[10] = 0b10100110;
 			test2[11] = 0b10010100;
 			test2[12] = 0b10001110;
 			test2[13] = 0b01110111;
+			test2[14] = 0b10010100;
+			test2[15] = 0b11111111;
+			test2[16] = 0b11000001;
+			
 
-			col1Size = 16;
-			col2Size = 14;
+			col1Size = 2;
+			col2Size = 17;
 
 			col1 = test1;
 			col2 = test2;

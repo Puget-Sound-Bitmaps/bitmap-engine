@@ -36,19 +36,21 @@ param: the current run in the form of an unsigned char *
 return: the number of counter bytes in the run
 */
 unsigned int counterBytes(byte * run, activeRun *curr_run){
-	int pos = 1;
+	int pos = 0;
 	unsigned int f_len; //keeping it unsigned? I think this helps
 	do{
-		unsigned int temp = run[pos] << 1;
+		unsigned int temp = run[pos+1] << 1;
 		temp >>= 1;
 		f_len = f_len + temp; //I believe we can add chars to ints
 		pos++;
-	}while(run[pos] >> 7 != 0);
+	}while(run[pos+1] >> 7 != 0);
 
     curr_run->tail_pos = curr_run->run_pos + pos +1;
 
     //storing the run size
     curr_run->run_size = 1 + pos;
+
+    curr_run->counter_len = pos;
 
 	return f_len;
 }
@@ -79,7 +81,7 @@ void store_tail(activeRun *run)
             val *= 2;
         }
 
-        if(run->fill_bit == 1)
+        if(run->fill_bit == 0)
         {
             
             run->tail_store[0] = val;
@@ -138,6 +140,10 @@ activeRun *initActiveRun(byte *run, int seq_size, int run_start){
     //finding the type for the run
     curr_run->run_type = getHeadType(run[run_start]);
 
+
+    //init counter_len to zero
+    curr_run->counter_len = 0;
+
     //if the type is 3 or 4 then counter bytes follow the header byte.
     //need to read the counter bytes
     
@@ -166,7 +172,6 @@ activeRun *initActiveRun(byte *run, int seq_size, int run_start){
         curr_run->tail_pos = curr_run->run_pos+1;
 
         store_tail(curr_run);
-
 
     }
     else if(curr_run->run_type == 2)
@@ -205,6 +210,8 @@ activeRun *initActiveRun(byte *run, int seq_size, int run_start){
     	byte bit_temp = run[run_start] << 3;
     	bit_temp >>= 7;
     	curr_run->fill_bit = bit_temp;
+
+
 
     	//getting fill_len for type 3
         curr_run->fill_len = counterBytes(run, curr_run);
@@ -257,9 +264,10 @@ void printActiveRun(activeRun * run)
 	printf("run type: %u\n", run->run_type);
 	printf("fill bit: %u\n", run->fill_bit);
 	printf("fill length: %u\n", run->fill_len);
+    printf("tail length: %u\n", run->tail_len);
 	if(run->run_type == 1 || run->run_type == 3)
 	{
-		printf("tail length: %u\n", run->tail_len);
+		
         printf("tail sequnce is: [ ");
         int i;
         for(i = 0; i < run->tail_len; i++)
@@ -277,6 +285,11 @@ void printActiveRun(activeRun * run)
 		printf("odd position: %u\n", run->odd_pos);
         printf("odd byte value (stored in tail): %u\n", run->tail_store[0]);
 	}
+
+    if(run->run_type == 3 || run->run_type == 4)
+    {
+        printf("Counter Byte length is: %u\n", run->counter_len);
+    }
 
     printf("\n");
 }

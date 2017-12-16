@@ -17,7 +17,7 @@ void bbcCompress(struct blockSeg *param){
     //param->colFile = fopen("filewrite/compressed%d.txt", i, "w");
     int j;
     for(j = 0; j < param->size; j++){
-      printf("data: %d\n", param->toCompress[j]);
+      //printf("ls %d\n", param->toCompress[j]);
     }
     param->next_byte = param->toCompress[i];//get the next byte from the block sequence of bytes
     //printf("next byte (#%d): %x\n", i, param->next_byte);
@@ -178,7 +178,7 @@ void bbcCompress(struct blockSeg *param){
   printf("param->size is %x\n", param->size);
   printf("writing final run, curr_size %x\n", param->curr_size);
   printf("sizeof byte is %x\n",(unsigned int) sizeof(byte));
-   printf("WRITING OUT(file end) \n");
+  printf("WRITING OUT(file end) \n");
   fwrite(param->curr_run, sizeof(byte), param->curr_size+1, param->colFile);
   fclose(param->colFile);
 

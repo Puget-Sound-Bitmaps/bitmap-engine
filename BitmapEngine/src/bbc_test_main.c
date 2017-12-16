@@ -10,6 +10,7 @@ int main(int argc, char*argv[])
   printf("start of main\n");
 
   int manualSet;
+  int query = 1;
   if(argc == 0)
   {
     manualSet = 1;
@@ -21,8 +22,10 @@ int main(int argc, char*argv[])
   manualSet = 0; //testing
 
   struct blockSeg *segtest1;
+  struct blockSeg *segtest2;
 
   segtest1 = (blockSeg*) malloc(sizeof(blockSeg));
+  segtest2 = (blockSeg*) malloc(sizeof(blockSeg));
 
 
 /////////////////for possibly writing an actual text file and reading it///////////////
@@ -36,7 +39,7 @@ int main(int argc, char*argv[])
   {
 
     int i;
-    int tnum = 12;
+    int tnum = 13;
 
     //TEST #0 (WORKING)
     //00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
@@ -324,8 +327,95 @@ int main(int argc, char*argv[])
   /*                                                                                            */
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
-  else
+  else if(query == 1)
   {
+    ////QUERY TESTING
+    //printf("about to open bbc_tester2.dat\n");
+    char cwd[1024];
+    char test1[1024];
+    char test2[1024];
+    char resFile[1024];
+    //char test[100];
+    getcwd(test1, sizeof(cwd));
+    getcwd(test2, sizeof(cwd));
+    getcwd(resFile, sizeof(cwd));
+    strcat(test1, "/converted_test1.dat");
+    strcat(test2, "/converted_test2.dat");
+    
+    printf("%s\n", test1);
+    printf("%s\n", test2);
+    //FILE *inPtr = fopen("C:/Users/bill/Documents/Summer2017/Bitmap Project/CompressionSummerResearch/Develop/Bitmap-Engine/BitmapWorkloadGenerator/src/bitmap_out.txt","rb");
+    FILE *inPtr1 = fopen(test1, "rb");
+    FILE *inPtr2 = fopen(test2, "rb");
+
+
+    printf("about to read from testers \n");
+    //int readSize = 8;
+    int help = sizeof(inPtr1);
+    printf("help: %d\n", help);
+    int i;
+    //int loopSize = 3000/8;
+    fseek(inPtr1, 0L, SEEK_END);
+    printf("about to read from testers \n");
+    fseek(inPtr2, 0L, SEEK_END);
+    int loopSize = ftell(inPtr1);
+    //int loopSize2 = ftell(inPtr2);
+    rewind(inPtr1);
+    rewind(inPtr2);
+    printf("about to read from testers \n");
+    segtest1->toCompress = (word_read*) malloc(sizeof(word_read)*loopSize);
+    segtest1->size = loopSize;
+    segtest2->toCompress = (word_read*) malloc(sizeof(word_read)*loopSize);
+    segtest2->size = loopSize;
+    word_read *uncomp_or_array = (word_read*) malloc(sizeof(word_read)*loopSize);
+    printf("loopsize: %d\n", loopSize);
+    for(i = 0; i < loopSize; i++)
+    {
+      //printf("inside loop\n");
+      //unsigned char buff[1];
+      fread(segtest1->toCompress, 1, loopSize, inPtr1);
+      fread(segtest2->toCompress, 1, loopSize, inPtr2);
+      //fread()
+      //fgets(buff,readSize,inPtr);
+      //segtest1->toCompress[i] = buff;
+      //printf("%02x", segtest1->toCompress[i]);
+    }
+    for(i = 0; i < loopSize; i++){
+      uncomp_or_array[i] = segtest1->toCompress[i] | segtest2->toCompress[i];
+      printf("segtest1 at pos: %02x ", segtest1->toCompress[i]);
+      printf("segtest2 at pos: %02x ", segtest2->toCompress[i]);
+      printf("or_array at pos: %d\n", uncomp_or_array[i]);
+    }
+    printf("\nloop end in query\n");
+
+
+  printf("here!!!!!!!!!!!!!\n");
+
+  FILE *ptr1 = fopen("bbc_test_output1.dat","wb");
+  FILE *ptr2 = fopen("bbc_test_output2.dat","wb");
+  FILE *or_ptr = fopen("uncompressed_OR.dat", "wb");
+  
+  //FILE *readfrom2 = fopen("")
+    printf("in final query \n");
+    segtest1->colFile = ptr1;
+    segtest2->colFile = ptr2;
+    for(i = 0; i < 3000/8; i++)
+    {
+      //printf("%x!!!\n",segtest1->toCompress[i]);
+    }
+    printf("colFile is pointing\n");
+    bbcCompress(segtest1);
+    bbcCompress(segtest2);
+    printf("writing to query uncompressed output file\n");
+    fwrite(uncomp_or_array, sizeof(byte), loopSize+1, or_ptr);
+
+    free(segtest1->toCompress);
+    free(segtest1);
+    free(segtest2->toCompress);
+    free(segtest2);
+    free(uncomp_or_array);
+
+  }else{
     printf("about to open bbc_tester2.dat\n");
     char cwd[1024];
     //char test[100];
@@ -358,27 +448,16 @@ int main(int argc, char*argv[])
       //printf("%02x", segtest1->toCompress[i]);
     }
     printf("\nloop end\n");
-
-
-
-
+    FILE *ptr = fopen("bbc_test_output.dat","wb");
+    segtest1->colFile = ptr;
+    for(i = 0; i < 3000/8; i++)
+    {
+      //printf("%x!!!\n",segtest1->toCompress[i]);
+    }
+    printf("colFile is pointing\n");
+    bbcCompress(segtest1);
+    free(segtest1->toCompress);
+    free(segtest1);
   }
 
-  printf("here!!!!!!!!!!!!!\n");
-
-  FILE *ptr = fopen("bbc_test_output.dat","wb");
-  //FILE *readfrom2 = fopen("")
-  segtest1->colFile = ptr;
-
-  int i;
-  for(i = 0; i < 3000/8; i++)
-  {
-    //printf("%x!!!\n",segtest1->toCompress[i]);
-  }
-
-  printf("colFile is pointing\n");
-  bbcCompress(segtest1);
-
-  free(segtest1->toCompress);
-  free(segtest1);
 }

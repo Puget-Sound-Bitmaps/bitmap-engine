@@ -23,6 +23,9 @@ typedef struct activeRun{
 	//The location of the odd bit in the current run
 	unsigned int odd_pos;  //only used for type 2 and 4 (!!! will be non-initalized if type 1 or 3 !!!) 
 
+	//The number of counter bytes used in the current run
+	unsigned int counter_len; //only used for type 3 and 4, will be 0 for type 1 and 2
+
 	//The fill bit corresponds to the bit being stored in the fill, storing a 1 means a 1-fill, stroing a 0 means a 0-fill
 	unsigned int fill_bit;
 

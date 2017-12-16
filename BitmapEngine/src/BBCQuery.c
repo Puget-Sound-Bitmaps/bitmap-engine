@@ -68,6 +68,8 @@ int Query_BBC(byte * ret, byte * col1, unsigned int size1, byte * col2, unsigned
         }
         int tail_pos1 = 0;
         int tail_pos2 = 0;
+
+
         //While run1 and run2 are not empty keep operating
         while((run1->tail_len != 0 || run1->fill_len != 0) && (run2->tail_len != 0 || run2->fill_len != 0))
         {
@@ -77,7 +79,6 @@ int Query_BBC(byte * ret, byte * col1, unsigned int size1, byte * col2, unsigned
             printf("pos1: %u pos2: %u\n", pos1, pos2);
             //fill OR fill
             if(run1->fill_len > 0 && run2->fill_len > 0){
-            
                 int lookAhead = 0;
                 if(run1->fill_len > run2->fill_len)
                 {
@@ -168,7 +169,10 @@ int Query_BBC(byte * ret, byte * col1, unsigned int size1, byte * col2, unsigned
                 }
                 out_pos++;
                 //pos1++;
-                pos2++;
+                if(run2->run_type == 1 || run2->run_type == 3)
+                {
+                    pos2++;
+                }
                 tail_pos2++;
                 run1->fill_len--;
                 run2->tail_len--;
@@ -201,7 +205,11 @@ int Query_BBC(byte * ret, byte * col1, unsigned int size1, byte * col2, unsigned
                     }
                 }
                 out_pos++;
-                pos1++;
+                
+                if(run1->run_type == 1 || run1->run_type == 3)
+                {
+                    pos1++;
+                }
                 //pos2++;
                 tail_pos1++;
                 run2->fill_len--;
@@ -220,13 +228,34 @@ int Query_BBC(byte * ret, byte * col1, unsigned int size1, byte * col2, unsigned
                     ret[out_pos] = run1->tail_store[tail_pos1] & run2->tail_store[tail_pos2];
                 }
                 out_pos++;
-                pos1++;
-                pos2++;
+
+                if(run1->run_type == 1 || run1->run_type == 3)
+                {
+                    pos1++;
+                }
+                if(run2->run_type == 1 || run2->run_type == 3)
+                {
+                    pos2++;
+                }
+
                 tail_pos1++;
                 tail_pos2++;
                 run1->tail_len--;
                 run2->tail_len--;
             }
+
+            //increment pos1 if there are counter bytes
+            if((run1->run_type == 3 || run1->run_type == 4) && run1->fill_len <= 0 && run1->tail_len <= 0)
+            {
+                pos1 += run1->counter_len;
+            }
+            //increment pos2 if there are counter bytes
+            if((run2->run_type == 3 || run2->run_type == 4) && run2->fill_len <= 0 && run2->tail_len <= 0)
+            {
+                pos2 += run2->counter_len;
+            }
+
+            printf("pos1: %u pos2: %u\n", pos1, pos2);
         }
 
         //If run1 is empty than update pos1 to the header postion of the next run
@@ -246,7 +275,6 @@ int Query_BBC(byte * ret, byte * col1, unsigned int size1, byte * col2, unsigned
     //If on success than return 1
     }
 
-    printf("pos1: %u pos2: %u\n", pos1, pos2);
     printf("------------QUERY DONE----------\n");
     return out_pos;
 }

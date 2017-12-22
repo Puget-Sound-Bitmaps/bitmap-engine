@@ -6,67 +6,67 @@
 #include <math.h>
 
 int main(int argc, char*argv[]) {
-	printf("Printing some numbers...\n");
-	unsigned char a = 'a';
-	printf("%x\n", a);
-	unsigned char f = 0b01100001;
+    printf("Printing some numbers...\n");
+    unsigned char a = 'a';
+    printf("%x\n", a);
+    unsigned char f = 0b01100001;
 
-	printf("%x\n", f);
-  unsigned char temp = 0b10010000;
-  unsigned char adder = 0b00000010;
-  temp <<= 2;
-  temp >>= 6;
-  unsigned char chartest = temp + adder;
-  unsigned int newtemp = (unsigned int)temp;
-  newtemp = newtemp + 1;
-  unsigned char final = (unsigned char)newtemp;
-  printf("Added Char: %x\n", final);
-  final <<= 6;
-  printf("Char after shift %x\n", final);
-  printf("can add chars? %x\n", chartest);
-  unsigned char chartest2 = 'c' + adder;
-  printf("can add chars? %c\n", chartest2);
-  unsigned char ones = 0b11111111;
-  unsigned char header = 0b10000000;
-  printf("header is %x\n", header);
-  unsigned char temp999 = header >> 7;
-  printf("new header is %x\n", header);
-  printf("temp is %x\n", temp999);
-  //should be a type 1 run 
-  unsigned char tester = 0b00010010;
-  //unsigned char run_type = getHeadType(tester);
-  //printf("run type: %d\n", run_type);
-  //printf("255 in char representation: %c\n", ones);
-  /*FILE *fp;
-  fp = fopen("filewrite/alphabet.txt", "w");
-  char *fstring = "abcdefghijklmnopqrstuvwxyz";
-  fwrite(fstring, 1, 26, fp);
-  fclose(fp);
-  printf("get outta here\n");
-  unsigned char thing = 'z';
-  thing = NULL;
-  printf("%x\n", thing);*/
-  unsigned char letter = 'a';
-  printf("letter a in binary: %d\n", letter);
-  unsigned int lettera = letter;
-  printf("letter a cast to an int: %d\n", lettera);
-  lettera = 8 + letter;
-  printf("adding 8 to letter a: %d\n", lettera);
+    printf("%x\n", f);
+    unsigned char temp = 0b10010000;
+    unsigned char adder = 0b00000010;
+    temp <<= 2;
+    temp >>= 6;
+    unsigned char chartest = temp + adder;
+    unsigned int newtemp = (unsigned int)temp;
+    newtemp = newtemp + 1;
+    unsigned char final = (unsigned char)newtemp;
+    printf("Added Char: %x\n", final);
+    final <<= 6;
+    printf("Char after shift %x\n", final);
+    printf("can add chars? %x\n", chartest);
+    unsigned char chartest2 = 'c' + adder;
+    printf("can add chars? %c\n", chartest2);
+    unsigned char ones = 0b11111111;
+    unsigned char header = 0b10000000;
+    printf("header is %x\n", header);
+    unsigned char temp999 = header >> 7;
+    printf("new header is %x\n", header);
+    printf("temp is %x\n", temp999);
+    //should be a type 1 run
+    unsigned char tester = 0b00010010;
+    //unsigned char run_type = getHeadType(tester);
+    //printf("run type: %d\n", run_type);
+    //printf("255 in char representation: %c\n", ones);
+    /*FILE *fp;
+    fp = fopen("filewrite/alphabet.txt", "w");
+    char *fstring = "abcdefghijklmnopqrstuvwxyz";
+    fwrite(fstring, 1, 26, fp);
+    fclose(fp);
+    printf("get outta here\n");
+    unsigned char thing = 'z';
+    thing = NULL;
+    printf("%x\n", thing);*/
+    unsigned char letter = 'a';
+    printf("letter a in binary: %d\n", letter);
+    unsigned int lettera = letter;
+    printf("letter a cast to an int: %d\n", lettera);
+    lettera = 8 + letter;
+    printf("adding 8 to letter a: %d\n", lettera);
 }
 
-	
+
 
 void printbincharpad(char n)
 {
-	while (n) {
-	    if (n & 1)
-	        printf("1");
-	    else
-	        printf("0");
+    while (n) {
+        if (n & 1)
+            printf("1");
+        else
+            printf("0");
 
-	    n >>= 1;
-	}
-	printf("\n");
+        n >>= 1;
+    }
+    printf("\n");
 }
 /**
 **Revisted Psudeo Code**
@@ -166,7 +166,7 @@ void bbcCompress(blockSegBBC *param){
     else if(param->byte_type==ODD_BYTE)
       /*if the tail_length is 0, we can easily change to
       either a TYPE_2 or TYPE_4 run by concatenating the
-      ODD_BYTE to the end of our fill. 
+      ODD_BYTE to the end of our fill.
       if(param->tail_len == 0)
 
         //if we are a TYPE_1 run
@@ -205,7 +205,7 @@ void bbcCompress(blockSegBBC *param){
 
     /*if we already have a tail, we must start a new run using
     the ODD_BYTE
-    //the startNewRun() function checks for this specific case 
+    //the startNewRun() function checks for this specific case
     else
       startNewRun(byte_type);
 

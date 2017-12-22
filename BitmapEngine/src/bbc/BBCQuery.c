@@ -10,7 +10,7 @@ int OR_BBC(byte * ret, byte * col1, unsigned int size1, byte * col2, unsigned in
 }
 
 int AND_BBC(byte * ret, byte * col1, unsigned int size1, byte * col2, unsigned int size2)
-{   
+{
     //will tell Query_BBC to perform AND operation on the two compressed seqs
     return Query_BBC(ret, col1, size1, col2, size2, 1);
 }
@@ -27,7 +27,7 @@ int Query_BBC(byte * ret, byte * col1, unsigned int size1, byte * col2, unsigned
 
     //the position we are in in our output array
     int out_pos = 0;
-    
+
     //The first active run
     activeRun *run1 = initDefRun();
     /*run1 = initActiveRun(col1, size1, pos1);
@@ -78,7 +78,7 @@ int Query_BBC(byte * ret, byte * col1, unsigned int size1, byte * col2, unsigned
             printf("run2 fill_len: %u tail_len: %u\n", run2->fill_len, run2->tail_len);
             printf("pos1: %u pos2: %u\n", pos1, pos2);
             //fill OR fill
-            if(run1->fill_len > 0 && run2->fill_len > 0){
+            if(run1->fill_len > 0 && run2->fill_len > 0) {
                 int lookAhead = 0;
                 if(run1->fill_len > run2->fill_len)
                 {
@@ -92,15 +92,15 @@ int Query_BBC(byte * ret, byte * col1, unsigned int size1, byte * col2, unsigned
                 int i;
                 //0 fill OR 0 fill
                 //0 fill AND 0 fill
-                if(run1->fill_bit == 0 && run2->fill_bit == 0){
-                   
+                if(run1->fill_bit == 0 && run2->fill_bit == 0) {
+
                     printf("0 fill OR 0 fill\n");
-                    
+
                     for(i = 0; i < lookAhead; i++)
                     {
                         //ERROR here, need to mallloc the *ret variable to the size
-                        //of the column(s) we are compressing. This should be done 
-                        //a tthe top of this file. 
+                        //of the column(s) we are compressing. This should be done
+                        //a tthe top of this file.
                         ret[out_pos + i] = 0b00000000;
                         printf("or op is: %u\n", ret[out_pos + i]);
                     }
@@ -141,22 +141,22 @@ int Query_BBC(byte * ret, byte * col1, unsigned int size1, byte * col2, unsigned
                 run2->fill_len -= lookAhead;
             }
             //fill OR messy
-            else if(run1->fill_len > 0 && run2->fill_len == 0){
+            else if(run1->fill_len > 0 && run2->fill_len == 0) {
                 //0 fill and messy
                 printf("fill OR messy\n");
-                if(run1->fill_bit == 0){
+                if(run1->fill_bit == 0) {
                     if(type == 0)
                     {
-                        ret[out_pos] = 0b00000000 | run2->tail_store[tail_pos2]; 
+                        ret[out_pos] = 0b00000000 | run2->tail_store[tail_pos2];
                         printf("run1 is 0 run2 is %u result of or op is: %u\n", run2->tail_store[tail_pos2], ret[out_pos]);
                     }
                     else if(type == 1)
                     {
                         ret[out_pos] = 0b00000000 & run2->tail_store[tail_pos2];
-                    }                
+                    }
                 }
                 //1 fill and messy
-                else{
+                else {
                     if(type == 0)
                     {
                         ret[out_pos] = 0b11111111 | run2->tail_store[tail_pos2];
@@ -178,22 +178,22 @@ int Query_BBC(byte * ret, byte * col1, unsigned int size1, byte * col2, unsigned
                 run2->tail_len--;
             }
             //messy OR fill
-            else if(run2->fill_len > 0 && run1->fill_len == 0){
+            else if(run2->fill_len > 0 && run1->fill_len == 0) {
                 printf("messy OR fill\n");
                 //0 fill and messy
-                if(run1->fill_bit == 0){
+                if(run1->fill_bit == 0) {
                     if(type == 0)
                     {
                         ret[out_pos] = 0b00000000 | run1->tail_store[tail_pos1];
-                        printf("run2 is 0 run1 is %u result of or op is: %u\n", run1->tail_store[tail_pos1], ret[out_pos]);        
+                        printf("run2 is 0 run1 is %u result of or op is: %u\n", run1->tail_store[tail_pos1], ret[out_pos]);
                     }
                     else if(type == 1)
                     {
-                        ret[out_pos] = 0b00000000 & run1->tail_store[tail_pos1]; 
-                    }         
+                        ret[out_pos] = 0b00000000 & run1->tail_store[tail_pos1];
+                    }
                 }
                 //1 fill and messy
-                else{
+                else {
                     if(type == 0)
                     {
                         ret[out_pos] = 0b11111111 | run1->tail_store[tail_pos1];
@@ -205,7 +205,7 @@ int Query_BBC(byte * ret, byte * col1, unsigned int size1, byte * col2, unsigned
                     }
                 }
                 out_pos++;
-                
+
                 if(run1->run_type == 1 || run1->run_type == 3)
                 {
                     pos1++;
@@ -216,7 +216,7 @@ int Query_BBC(byte * ret, byte * col1, unsigned int size1, byte * col2, unsigned
                 run1->tail_len--;
             }
             //messy OR messy
-            else{
+            else {
                 printf("messy OR messy\n");
                 if(type == 0)
                 {
@@ -264,15 +264,15 @@ int Query_BBC(byte * ret, byte * col1, unsigned int size1, byte * col2, unsigned
         {
             free(run1);
         }
-        
+
         //If run2 is empty than update pos2 to the header positon of the next run
 
         if(run2->tail_len == 0 && run2->fill_len == 0)
         {
             free(run2);
         }*/
-        
-    //If on success than return 1
+
+        //If on success than return 1
     }
 
     printf("------------QUERY DONE----------\n");

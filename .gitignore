@@ -1,2 +1,5 @@
 # Ignore the .DS_Store file created by MacOS
 .DS_Store
+
+# Ignore the `bin/` directories
+bin/

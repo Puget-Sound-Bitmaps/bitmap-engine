@@ -10,22 +10,34 @@
 #include <pthread.h>
 #include <sys/stat.h>
 
-#include "ActiveWord.h"
-#include "Clock.h"
-#include "QueryData.h"
-#include "QueryUtil.h"
-#include "SegUtil.h"
-#include "VALQuery.h"
-#include "WAHCompressor.h"
-#include "Writer.h"
-#include "BlockSeg.h"
-#include "Control.h"
-#include "Query.h"
-#include "RawBitmapReader.h"
-#include "VALCompressor.h"
-#include "Vars.h"
-#include "WAHQuery.h"
-#include "BBCUtil.h"
-#include "ActiveRun.h"
-#include "BBCQuery.h"
+#include "active/word/ActiveWord.h"
+#include "active/run/ActiveRun.h"
+
+#include "block-seg/BlockSeg.h"
+
+#include "bbc/BBCUtil.h"
+#include "bbc/BBCQuery.h"
+#include "bbc/BBCCompressor.h"
+
+#include "config/Vars.h"
+#include "config/Control.h"
+
+#include "clock/Clock.h"
+
+#include "query/Query.h"
+#include "query/QueryData.h"
+#include "query/QueryUtil.h"
+
+#include "raw-bitmap-reader/RawBitmapReader.h"
+
+#include "seg-util/SegUtil.h"
+
+#include "val/VALCompressor.h"
+#include "val/VALQuery.h"
+
+#include "wah/WAHCompressor.h"
+#include "wah/WAHQuery.h"
+
+#include "writer/Writer.h"
+
 #endif /* CORE_H */

@@ -4,7 +4,7 @@
  *  Created on: Jun 14, 2016
  *      Author: alexia
  */
-#include "Control.h"
+#include "../config/Control.h"
 #include "QueryData.h"
 #ifndef QUERY_H_
 #define QUERY_H_

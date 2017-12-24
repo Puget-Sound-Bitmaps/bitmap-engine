@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "Core.h"
+#include "../Core.h"
 
 // #include <stdlib.h>
 // #include <math.h>

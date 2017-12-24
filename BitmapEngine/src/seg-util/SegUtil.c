@@ -1,5 +1,5 @@
 
-#include "Core.h"
+#include "../Core.h"
 
 word_32 one = 1;//used for bitwise operations with longs/ints
 word_32 oneLit[4];//4 different combinations (3 lengths for VAL, 1 for WAH)

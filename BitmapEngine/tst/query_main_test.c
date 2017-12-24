@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include "Core.h"
+#include "../src/Core.h"
 
 int main(int argc, char*argv[])
 {

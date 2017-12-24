@@ -1,5 +1,5 @@
 
-#include "BlockSeg.h"
+#include "../block-seg/BlockSeg.h"
 
 #ifndef RAWBITMAPREADER_H_
 #define RAWBITMAPREADER_H_

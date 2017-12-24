@@ -1,7 +1,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "Core.h"
+#include "../Core.h"
 /**
  * Compresses the block of data stored in param using VAL, according to the segment length specified
  * Writes compressed data to file pointer specified in blockSeg struct -> colFile

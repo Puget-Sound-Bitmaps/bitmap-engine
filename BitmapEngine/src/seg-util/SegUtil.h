@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-#include "Control.h"
+#include "../config/Control.h"
 
 #define LITERAL -1//a literal word (0...0111)
 #define ZERO_LIT 0//a literal of all zeros (000000...00)

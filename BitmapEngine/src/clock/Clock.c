@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "Core.h"
+#include "../Core.h"
 
 double rtclock() {
     struct timezone Tzp;

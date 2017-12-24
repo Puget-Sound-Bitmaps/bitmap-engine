@@ -1,8 +1,7 @@
 #ifndef WRITER_H_
 #define WRITER_H_
 
-
-#include "Control.h"
+#include "../config/Control.h"
 
 int reformat(char **);
 int toUnstriped();

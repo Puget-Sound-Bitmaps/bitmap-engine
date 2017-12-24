@@ -1,6 +1,7 @@
-#include "Core.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "../../Core.h"
+
 /**
  * Allocates memory for activeWord that tracks segment data for word of length s
  * Returns pointer to the activeWord struct

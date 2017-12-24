@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "Core.h"
+#include "../Core.h"
 
 pthread_t *threads;//thread pointers
 char compressed_path[BUFF_SIZE];//the file location for the compressed files

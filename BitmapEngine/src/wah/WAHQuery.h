@@ -1,7 +1,7 @@
 #ifndef WAHQUERY_H_
 #define WAHQUERY_H_
 
-#include "Control.h"
+#include "../config/Control.h"
 
 void initWAHQuery();
 

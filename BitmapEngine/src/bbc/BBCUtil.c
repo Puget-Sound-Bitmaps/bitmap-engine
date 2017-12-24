@@ -1,7 +1,7 @@
 //BBCUtil.c
 
 //#include "BBCUtil.h"
-#include "Core.h"
+#include "../Core.h"
 
 
 //transates a byte with a single '1' into a 3-bit representation of that bit's position

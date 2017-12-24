@@ -8,7 +8,7 @@
 #ifndef QUERYUTIL_H_
 #define QUERYUTIL_H_
 
-#include "ActiveWord.h"
+#include "../active/word/ActiveWord.h"
 
 void fillORfill(activeWord *, activeWord *,activeWord *);
 void litORlit(activeWord *, activeWord *, activeWord *);

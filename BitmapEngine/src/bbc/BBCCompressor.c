@@ -1,5 +1,5 @@
 /**Revisted Psudeo Code**/
-#include "Core.h"
+#include "../Core.h"
 
 
 void bbcCompress(struct blockSeg *param) {

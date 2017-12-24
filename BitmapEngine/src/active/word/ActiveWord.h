@@ -2,7 +2,7 @@
 #ifndef ACTIVEWORD_H_
 #define ACTIVEWORD_H_
 
-#include "Control.h"
+#include "../../config/Control.h"
 
 typedef struct activeWord{
 	word_32 *flag;//list of segment flags (0-literal, 1-run)

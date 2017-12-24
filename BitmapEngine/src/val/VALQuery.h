@@ -2,8 +2,8 @@
 #ifndef VALQUERY_H_
 #define VALQUERY_H_
 
-#include "Control.h"
-#include "ActiveWord.h"
+#include "../config/Control.h"
+#include "../active/word/ActiveWord.h"
 
 void initVALQuery();
 

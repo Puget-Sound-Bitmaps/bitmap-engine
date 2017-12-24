@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include "BlockSeg.h"
-#include "BBCCompressor.h"
+#include "../src/block-seg/BlockSeg.h"
+#include "../src/bbc/BBCCompressor.h"
 
 int main(int argc, char*argv[])
 {

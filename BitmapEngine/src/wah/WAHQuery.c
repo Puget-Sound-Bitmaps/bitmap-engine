@@ -1,64 +1,65 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "Core.h"
+#include "../Core.h"
 
 
 /*
  * ANDs two columns together (col0 AND col1) and saves into ret arg
  * sz0 and sz1 are sizes of the columns we're ANDing
  */
-int AND_WAH(word_32 *ret, word_32 *col0, int sz0, word_32 *col1, int sz1) {
-    int c0;//the word number we're scanning from col0
-    int c1;//the word number we're scanning from col1
-    int d;//the spot we're saving into the result
-    c0 = c1 = 1;//track which word we're looking at
-    d=0;//start saving into the first spot
+int AND_WAH(word_32 *ret, word_32 *col0, int sz0, word_32 *col1, int sz1)
+{
+    int c0;         // the word number we're scanning from col0
+    int c1;         // the word number we're scanning from col1
+    int d;          // the spot we're saving into the result
+    c0 = c1 = 1;    // track which word we're looking at
+    d = 0;          // start saving into the first spot
 
-    word_32 w0 = col0[c0++];//get the first word from first col
-    word_32 w1 = col1[c1++];//get the first word from second col
+    word_32 w0 = col0[c0++];    // get the first word from first col
+    word_32 w1 = col1[c1++];    // get the first word from second col
 
-    //get each of their word type SegUtil.h type definitions
-    int t0 = getType(w0,WORD_LENGTH);
-    int t1 = getType(w1,WORD_LENGTH);
+    // get each of their word type SegUtil.h type definitions
+    int t0 = getType(w0, WORD_LENGTH);
+    int t1 = getType(w1, WORD_LENGTH);
 
-    while(c0<=sz0 && c1<=sz1) {
-        word_32 toAdd;//this is the result word we're creating from w0 and w1
-        if(t0 < ZERO_RUN && t1 < ZERO_RUN) { //two literals
+    while (c0 <= sz0 && c1 <= sz1) {
+        word_32 toAdd;  //  this is the result word we're creating from w0 and w1
+        if(t0 < ZERO_RUN && t1 < ZERO_RUN) { // two literals
             toAdd = litANDlitWAH(w0,w1);
 
-            //update both
+            // update both
             w0 = col0[c0++];
-            t0 = getType(w0,WORD_LENGTH);
+            t0 = getType(w0, WORD_LENGTH);
             w1 = col1[c1++];
-            t1 = getType(w1,WORD_LENGTH);
+            t1 = getType(w1, WORD_LENGTH);
 
         }
-        else if(t0 < ZERO_RUN || t1 < ZERO_RUN) { //one literal, one fill
-            if(t0 < ZERO_RUN) { //w0 is the literal
+        else if (t0 < ZERO_RUN || t1 < ZERO_RUN) { //one literal, one fill
+            if (t0 < ZERO_RUN) {    // w0 is the literal
                 toAdd = fillANDlitWAH(&w1,&t1,w0);
-                w0 = col0[c0++];//update the literal
+                w0 = col0[c0++];    // update the literal
                 t0 = getType(w0,WORD_LENGTH);
             }
-            else { //w1 is the literal
+            else {  // w1 is the literal
                 toAdd = fillANDlitWAH(&w0,&t0,w1);
-                w1 = col1[c1++];//update the literal
+                w1 = col1[c1++];    // update the literal
                 t1 = getType(w1,WORD_LENGTH);
             }
         }
-        else { //two fills
-            if ((w0 << 2) < (w1 << 2)) { //w0 is smaller
+        else { // two fills
+            if ((w0 << 2) < (w1 << 2)) { // w0 is smaller
                 toAdd = fillANDfillWAH(w0,t0,&w1,&t1);
                 w0 = col0[c0++];//update the smaller fill
                 t0 = getType(w0,WORD_LENGTH);
             }
-            else if ((w0 << 2) > (w1 << 2)) { //w1 is smaller
+            else if ((w0 << 2) > (w1 << 2)) { // w1 is smaller
                 toAdd = fillANDfillWAH(w1,t1,&w0,&t0);
-                w1 = col1[c1++];//update the smaller fill
+                w1 = col1[c1++];    // update the smaller fill
                 t1 = getType(w1,WORD_LENGTH);
             }
-            else { //special case, equal fills (can be treated as literals)
+            else { // special case, equal fills (can be treated as literals)
                 toAdd = litANDlitWAH(w0,w1);
-                //update both
+                // update both
                 w0 = col0[c0++];
                 t0 = getType(w0,WORD_LENGTH);
                 w1 = col1[c1++];
@@ -66,16 +67,16 @@ int AND_WAH(word_32 *ret, word_32 *col0, int sz0, word_32 *col1, int sz1) {
             }
         }
 
-        if(d>=1) { //if this isn't the first word, append it to the end of the resulting column we're building
+        if (d >= 1) { // if this isn't the first word, append it to the end of the resulting column we're building
             appendWAH(ret,toAdd,&d);
 
         }
-        else { //special case --> first word (can't append because first word is wordLength)
+        else { // special case --> first word (can't append because first word is wordLength)
             ret[++d] = toAdd;//just add it
         }
     }
 
-    return d+1;//the number of words we just wrote
+    return d + 1;//the number of words we just wrote
 }
 
 
@@ -83,12 +84,13 @@ int AND_WAH(word_32 *ret, word_32 *col0, int sz0, word_32 *col1, int sz1) {
  * ORs two columns together (col0 AND col1) and saves into ret arg
  * sz0 and sz1 are sizes of the columns we're ORing
  */
-int OR_WAH(word_32 *ret,word_32 *col0,int sz0, word_32 *col1, int sz1) {
-    int c0=1;//track which word in col0 we're looki98 ng at
-    int c1=1;//track which word in col1 we're looking at
-    int d=0;//track which spot in the resulting array we're saving into
+int OR_WAH(word_32 *ret, word_32 *col0, int sz0, word_32 *col1, int sz1)
+{
+    int c0 = 1; // track which word in col0 we're looki98 ng at
+    int c1 = 1; // track which word in col1 we're looking at
+    int d = 0;  // track which spot in the resulting array we're saving into
     printf("\nin OR_WAH\n");
-    //get the first word from each column
+    // get the first word from each column
     word_32 w0 = col0[c0++];
     printf("\n\tpre word_32 w1 = col1[c1++], in OR_WAH\n");
     printf("\n\tc0:%d\t\tc1:%d\n\n", c0, c1);
@@ -96,36 +98,33 @@ int OR_WAH(word_32 *ret,word_32 *col0,int sz0, word_32 *col1, int sz1) {
     word_32 w1 = col1[c1++];
     printf("\n\tpost word_32 w1 = col1[c1++], in OR_WAH\n");
 
-    //and figure out their types (see type definition in SegUtil.h)
+    // and figure out their types (see type definition in SegUtil.h)
     int t0 = getType(w0,WORD_LENGTH);
     int t1 = getType(w1,WORD_LENGTH);
 
-
-
-
-    while(c0<=sz0 && c1<=sz1) {
-        word_32 toAdd;//this is the resulting word from ORing w0 and w1
-        if(t0 < ZERO_RUN && t1 < ZERO_RUN) { //two literals
+    while(c0 <= sz0 && c1 <= sz1) {
+        word_32 toAdd;  // this is the resulting word from ORing w0 and w1
+        if(t0 < ZERO_RUN && t1 < ZERO_RUN) { // two literals
             toAdd = litORlitWAH(w0,w1);
-            //update both
+            // update both
             w0 = col0[c0++];
             t0 = getType(w0,WORD_LENGTH);
             w1 = col1[c1++];
             t1 = getType(w1,WORD_LENGTH);
         }
-        else if(t0 < ZERO_RUN || t1 < ZERO_RUN) { //one literal, one fill
-            if(t0 < ZERO_RUN) { //w0 is the literal
+        else if (t0 < ZERO_RUN || t1 < ZERO_RUN) { // one literal, one fill
+            if (t0 < ZERO_RUN) {    // w0 is the literal
                 toAdd = fillORlitWAH(&w1,&t1,w0);
-                w0 = col0[c0++];//update the literal
+                w0 = col0[c0++];    // update the literal
                 t0 = getType(w0,WORD_LENGTH);
             }
-            else { //w1 is the literal
+            else { // w1 is the literal
                 toAdd = fillORlitWAH(&w0,&t0,w1);
                 w1 = col1[c1++];//update the literal
                 t1 = getType(w1,WORD_LENGTH);
             }
         }
-        else { //two fills
+        else { // two fills
             if ((w0 << 2) < (w1 << 2)) { //w0 is smaller
                 toAdd = fillORfillWAH(w0,t0,&w1,&t1);
                 w0 = col0[c0++];//update the smaller fill
@@ -136,9 +135,9 @@ int OR_WAH(word_32 *ret,word_32 *col0,int sz0, word_32 *col1, int sz1) {
                 w1 = col1[c1++];//update the smaller
                 t1 = getType(w1,WORD_LENGTH);
             }
-            else { //special case, equal fills (can be treated as literals)
+            else { // special case, equal fills (can be treated as literals)
                 toAdd = litORlitWAH(w0,w1);
-                //update both
+                // update both
                 w0 = col0[c0++];
                 t0 = getType(w0,WORD_LENGTH);
                 w1 = col1[c1++];

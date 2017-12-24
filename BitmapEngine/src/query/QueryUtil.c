@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "Core.h"
+#include "../Core.h"
 
 /**
  * ORs the next 2 segments (2 fills) and stores result

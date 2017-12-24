@@ -37,7 +37,7 @@ return: the number of counter bytes in the run
 */
 unsigned int counterBytes(byte * run, activeRun *curr_run) {
     int pos = 0;
-    unsigned int f_len; //keeping it unsigned? I think this helps
+    unsigned int f_len = 0; //keeping it unsigned? I think this helps
     do {
         unsigned int temp = run[pos+1] << 1;
         temp >>= 1;

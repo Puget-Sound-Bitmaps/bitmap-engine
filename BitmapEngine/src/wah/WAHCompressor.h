@@ -1,7 +1,7 @@
 #ifndef WAHCOMPRESSOR_H_
 #define WAHCOMPRESSOR_H_
 
-#include "BlockSeg.h"
+#include "../block-seg/BlockSeg.h"
 
 void compressUsingWAH(blockSeg *);
 

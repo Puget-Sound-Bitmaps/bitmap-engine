@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "Core.h"
+#include "../Core.h"
 
 int numCols;//number of columns
 int max = 200;//maximum number of columns to build at once (cap on number of files open at once)

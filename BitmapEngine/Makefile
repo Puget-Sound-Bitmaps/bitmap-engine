@@ -10,8 +10,10 @@ all: \
 	format \
 	compress_u \
 	compress_s \
-	query_u \
-	query_s \
+
+	# FIXME queries cause segmentation faults
+	# query_s \
+	# query_u \
 	# bintest \
 	# testquery \
 
@@ -20,24 +22,24 @@ clean:
 	@if test -d $(BIN); then rm -rf $(BIN)/*; else mkdir $(BIN); fi
 
 main:
-	@echo "Compiling `main` Program"
+	@echo "Compiling main"
 	@gcc -Wall -o $(BIN)/main \
 		$(SRC)/main.c \
-		$(SRC)/ActiveWord.c \
-		$(SRC)/Clock.c \
-		$(SRC)/Query.c \
-		$(SRC)/QueryUtil.c \
-		$(SRC)/RawBitmapReader.c \
-		$(SRC)/SegUtil.c \
-		$(SRC)/VALCompressor.c \
-		$(SRC)/VALQuery.c \
-		$(SRC)/WAHCompressor.c \
-		$(SRC)/WAHQuery.c \
-		$(SRC)/Writer.c \
-		$(SRC)/BBCUtil.c \
-		$(SRC)/BBCCompressor.c \
-		$(SRC)/ActiveRun.c \
-		$(SRC)/BBCQuery.c \
+		$(SRC)/active/word/ActiveWord.c \
+		$(SRC)/clock/Clock.c \
+		$(SRC)/query/Query.c \
+		$(SRC)/query/QueryUtil.c \
+		$(SRC)/raw-bitmap-reader/RawBitmapReader.c \
+		$(SRC)/seg-util/SegUtil.c \
+		$(SRC)/val/VALCompressor.c \
+		$(SRC)/val/VALQuery.c \
+		$(SRC)/wah/WAHCompressor.c \
+		$(SRC)/wah/WAHQuery.c \
+		$(SRC)/writer/Writer.c \
+		$(SRC)/bbc/BBCUtil.c \
+		$(SRC)/bbc/BBCCompressor.c \
+		$(SRC)/active/run/ActiveRun.c \
+		$(SRC)/bbc/BBCQuery.c \
 		-lpthread -lm
 
 # format bitmap
@@ -75,8 +77,6 @@ query_s:
 		$(bitmap_out)_STRIPED_1_COMPRESSED \
 		$(query_out) \
 		1
-
-# NOTHING BELOW HERE IS REFERENCED IN THE README
 
 bintest:
 	@echo "Compiling `bintest` Program"

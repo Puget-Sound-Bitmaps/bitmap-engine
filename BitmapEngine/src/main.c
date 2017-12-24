@@ -17,9 +17,6 @@ int main(int argc, char *argv[])
     // move each function to a separate one to simplify the logic of this code.
     // e.g., bformat, bcompress, bquery
 
-    char *engine_choice = argv[1];
-    char *bitmap_path = argv[2];
-
     if (argc > 2 && (strcmp(argv[1], "F") == 0 || strcmp(argv[1], "C") == 0 || strcmp(argv[1], "Q") == 0))
     {
 

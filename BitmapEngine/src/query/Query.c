@@ -1,6 +1,6 @@
 
 #include <stdio.h>
-#include "Core.h"
+#include "../Core.h"
 
 int *range1;//list of all columns in first range
 int *range2;//list of all columns in second range

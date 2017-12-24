@@ -1,9 +1,9 @@
 #ifndef VALCOMPRESSOR_H_
 #define VALCOMPRESSOR_H_
 
-#include "RawBitmapReader.h"
-#include "BlockSeg.h"
-#include "Control.h"
+#include "../raw-bitmap-reader/RawBitmapReader.h"
+#include "../block-seg/BlockSeg.h"
+#include "../config/Control.h"
 
 unsigned int compressUsingVAL(blockSeg *,int);
 void initVALCompressorSegs();

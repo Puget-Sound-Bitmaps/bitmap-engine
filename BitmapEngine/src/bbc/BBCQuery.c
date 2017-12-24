@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "Core.h"
-#include "ActiveRun.h"
+#include "../Core.h"
+#include "../active/run/ActiveRun.h"
 
 int OR_BBC(byte * ret, byte * col1, unsigned int size1, byte * col2, unsigned int size2)
 {

@@ -102,3 +102,9 @@ testquery:
 		$(SRC)/ActiveRun.c \
 		$(SRC)/BBCQuery.c \
 		-lpthread -lm
+
+compressor_run:
+	@echo "Compiling compressor run"
+	@gcc -Wall -o $(BIN)/compressor_run \
+		$(SRC)/Compressor_Run.c \
+		-lpthread -lm

@@ -1,8 +1,8 @@
-# Bitmap Engine
+# Bitmap-Engine
 Bitmap indexing is a database implementation system known for its highly efficient queries. This engine implements bitmap compression and querying using several different techniques.
 
 ## Getting started
-Clone the repository and make sure you're at the top level of `BitmapEngine/`.
+Clone the repository and make sure you're at the top level of `Bitmap-Engine/`.
 
 Compile all files and run test files:
 ```
@@ -17,7 +17,7 @@ Test striped compression:
 make compress_s
 ```
 ## More information
-Please refer to [the wiki](https://github.com/Jahrme/Bitmap-Engine/wiki) for further discussion of the algorithms and implementation details.
+Please refer to [the wiki](https://github.com/Jahrme/Bitmap-Engine/wiki) for details pertaining to the algorithms and implementation.
 ## Authors
 - Alexia Ingerson
 - David Chiu

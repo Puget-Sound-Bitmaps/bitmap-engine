@@ -32,7 +32,7 @@ typedef struct blockSeg
 	byte next_byte;
 	unsigned int byte_type;
 	byte header;
-	byte *curr_run; /*the current run (an array of bytes, in case we have literals, counter bytes, etc.)*/
+	byte *curr_run; // the current run (an array of bytes, in case we have literals, counter bytes, etc.)
 	unsigned int curr_size; //the length of the curr_run array
 
 } blockSeg;

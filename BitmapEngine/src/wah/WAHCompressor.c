@@ -20,10 +20,13 @@ void compressUsingWAH(blockSeg *param)
 		j = 0;
 	}
 
-	prev = getType(param->curr, WORD_LENGTH);	// find the type of the previous compressed word (to see if we can concatenate)
+	// get the type of the previous compressed word (to see if we can concatenate)
+	prev = getType(param->curr, WORD_LENGTH);
 
-	for(; j<numWords; j++)	{ // go through every uncompressed word
-		int next = getType(param->toCompress[j], WORD_LENGTH);	// the type of this word
+	// go through every uncompressed word
+	for(; j < numWords; j++) {
+		// get the type of this word
+		int next = getType(param->toCompress[j], WORD_LENGTH);
 
 		// the next word is a run of 0s
 		if (next == ZERO_LIT) {	// this one and the one before it were both literal runs of zeros so put it in a new fill word of 0s
@@ -36,20 +39,25 @@ void compressUsingWAH(blockSeg *param)
 					fwrite(&(param->curr), sizeof(word_32),1,param->colFile);
 					param->curr = param->toCompress[j];
 					prev = next;
-				} else {	// this means that we can increment the zero run in the previous spot
+				} else { // this means that we can increment the zero run in the previous spot
 					param->curr += 1;
 				}
-			} else {	// the current one is a zero literal but the word before has both 0s and 1s (we can't do anything), so just save as is and keep going
+			} else {
+				// the current one is a zero literal but the word before has both
+				//  0s and 1s (we can't do anything), so just save as is and keep going
 				fwrite(&(param->curr), sizeof(word_32),1,param->colFile);
 				param->curr = param->toCompress[j];
 				prev = next;
 			}
 		} else if (next == ONE_LIT) {
-			if (prev == ONE_LIT) {//if the last one was a literal of ones and this one was too, put them together
+			if (prev == ONE_LIT) {
+				// if the last one was a literal of ones and this one was too, put them together
 				param->curr = getOneFill(WORD_LENGTH);
 				prev = ONE_RUN;
 			}
-			else if (prev == ONE_RUN) { // we want to increment the last one but we can't because it's full so we still have to keep the literal
+			else if (prev == ONE_RUN) {
+				 // we want to increment the last one but we can't because it's full so
+				 // we still have to keep the literal
 				if (param->curr == getMaxOneFill(WORD_LENGTH)) {
 					fwrite(&(param->curr), sizeof(word_32),1,param->colFile);
 					param->curr = param->toCompress[j];
@@ -59,9 +67,10 @@ void compressUsingWAH(blockSeg *param)
 					param->curr += 1;
 				}
 			}
-			else {//when the current one is a literal of all ones
-				//if the previous one is not a run or literal of ones
-				 //(either literal or run of zeros), just save as the literal that it is
+			else {
+				// when the current one is a literal of all ones
+				// if the previous one is not a run or literal of ones
+				// (either literal or run of zeros), just save as the literal that it is
 				fwrite(&(param->curr), sizeof(word_32),1,param->colFile);
 				param->curr = param->toCompress[j];
 				prev = next;

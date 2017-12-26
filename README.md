@@ -17,7 +17,7 @@ Test striped compression:
 make compress_s
 ```
 ## More information
-Please refer to [the wiki](https://github.com/Jahrme/Bitmap-Engine/wiki) for details pertaining to the algorithms and implementation.
+Please refer to [the wiki](https://github.com/Jahrme/Bitmap-Engine/wiki) for details pertaining to the algorithms and implementation. If you'd like a local copy of it, you can fetch it from that page using GitHub Desktop.
 ## Authors
 - Alexia Ingerson
 - David Chiu

@@ -1,7 +1,7 @@
 /*
  ============================================================================
  Name        : Compressor_Run.c
- Author      : 
+ Author      :
  Version     :
  Copyright   : Your copyright notice
  Description : Hello World in C, Ansi-style
@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "Vars.h"
+#include "Core.h"
 #include <string.h>
 
 /**
@@ -19,6 +19,9 @@
  */
 int main(int argc, char*argv[]) {
 	setbuf(stdout,NULL);
+
+	const char *PROGRAM;
+	int NUM_TRIALS = 3;
 
 	if(argc>2 && (strcmp(argv[1],"F")==0 || strcmp(argv[1],"C")==0 || strcmp(argv[1],"Q")==0)){
 		if(strcmp(argv[1],"F")==0){//FORMATTING

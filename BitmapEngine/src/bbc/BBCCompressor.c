@@ -180,7 +180,6 @@ void bbcCompress(struct blockSeg *param) {
     printf("sizeof byte is %x\n",(unsigned int) sizeof(byte));
     printf("WRITING OUT(file end) \n");
     fwrite(param->curr_run, sizeof(byte), param->curr_size+1, param->colFile);
-    fclose(param->colFile);
 
     free(param->curr_run);
 }

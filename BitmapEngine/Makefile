@@ -4,18 +4,13 @@ BIN := bin
 bitmap_out := ../BitmapWorkloadGenerator/bin/bitmap_out.txt
 query_out := ../BitmapWorkloadGenerator/bin/query_out.txt
 
-all: \
-	clean \
-	main \
-	format \
-	compress_u \
-	compress_s \
+all: clean main format compress_u compress_s
 
-	# FIXME queries cause segmentation faults
-	# query_s \
-	# query_u \
-	# bintest \
-	# testquery \
+# FIXME queries cause segmentation faults
+# query_s \
+# query_u \
+# bintest \
+# testquery \
 
 clean:
 	@echo "Setting Up Output Directory"

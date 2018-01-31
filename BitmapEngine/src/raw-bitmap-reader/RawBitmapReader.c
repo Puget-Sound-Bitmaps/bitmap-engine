@@ -477,7 +477,6 @@ void compressColumn(int col, int threadNum) {
 
     unsigned int min = 0;
     min--;
-    int optimal=0;
 
     for(i=0; i<runs; i++) {
 
@@ -521,7 +520,6 @@ void compressColumn(int col, int threadNum) {
 
         if(format==VAL && NUM_SEGS==-1) {
             if(numWords<min) { //if the column we just compressed is smaller than a previous max
-                optimal = length;
                 min=numWords;//save it as the new minimum size
                 char rmv[BUFF_SIZE];
                 snprintf(rmv,BUFF_SIZE,"%s%d.dat",compressed_path,numCols+threadNum);

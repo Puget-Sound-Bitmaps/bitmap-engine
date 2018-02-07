@@ -1,4 +1,5 @@
 SRC := src
+TST := tst
 BIN := bin
 
 bitmap_out := ../BitmapWorkloadGenerator/bin/bitmap_out.txt
@@ -75,7 +76,7 @@ query_s:
 
 bintest:
 	@echo "Compiling `bintest` Program"
-	@gcc -Wall -o $(BIN)/bintest $(SRC)/binarytest.c
+	@gcc -Wall -o $(BIN)/bintest $(TST)/binarytest.c
 
 testquery:
 	@echo "Compiling `mainquery` Program"

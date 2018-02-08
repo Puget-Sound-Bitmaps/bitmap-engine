@@ -47,11 +47,11 @@ int main(int argc, char *argv[])
         /* run compression here */
         if (strcmp(format, "UNSTRIPED") == 0)
         {
-            time = compress(bitmap_file, UNSTRIPED, BBC, n);
+            time = compress(bitmap_file, UNSTRIPED, BBC, num_threads);
         }
         else
         {
-            time = compress(bitmap_file, STRIPED, WAH, n);
+            time = compress(bitmap_file, STRIPED, WAH, num_threads);
         }
 
         printf("time: %f...", time);

@@ -10,9 +10,9 @@ all: \
 	format \
 	compress_u \
 	compress_s \
-	# query_u \
 
 	# FIXME queries cause segmentation faults
+	# query_u \
 	# query_s \
 	# bintest \
 	# testquery \

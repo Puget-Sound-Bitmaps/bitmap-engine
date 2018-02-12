@@ -34,11 +34,8 @@
      c0 = c1 = 1;
      d = 0;        /* start saving into the first spot */
 
-     // FIXME col1
-
      word_32 w0 = col0[c0++];
      word_32 w1 = col1[c1++];
-     printf("Inside op-wah\n");
      int t0 = getType(w0, WORD_LENGTH);
      int t1 = getType(w1, WORD_LENGTH);
 

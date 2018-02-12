@@ -39,7 +39,6 @@ void runQueries(char *folder, char *query, int n) // FIXME folder -> directory
     // This needs to skip over the comment lines, and begin parsing.
     query_file = query;
 
-    printf("query_file = %s\n", query_file);
     FILE *fp = fopen(query_file, "r");//open the query file
     num_threads = n;
     if (fp == NULL) {
@@ -80,7 +79,6 @@ void executeQuery() {
     // go through the first range and make sure every column that we're going to need is loaded
     for (i = 1; i <= range1[0]; i++) {
         if (sz[range1[i]] == -1) { // column hasn't been loaded
-            printf("Loading column %d\n", i);
             loadCol(range1[i]); // load each file into memory first
         }
         if (sz[range1[i]] > maxWords) maxWords = sz[range1[i]];
@@ -114,34 +112,27 @@ void executeQuery() {
         for (g = 0; g < results1[h]->resultSize; g++) {
             results1[h]->result[g] = cols[range1[ind]][g];
         }
-        printf("About to create thread\n" );
         if (pthread_create(&threads[h], NULL, startRangeOneThread, (void *)(&threadNum[h]))) {
             printf("Error creating thread\n");
             return;
         }
     }
-    printf("#threads = %d\n",num_threads);
-    printf("threads[0] = %d\n",threads[0]);
+
     pthread_join(threads[0], NULL);
-    printf("joined!\n");
     for (h = 0; h < num_threads; h++) { // wait for all the threads to finish
-        printf("Joining thread %d\n", h);
         if (h == started1) break;
         if (pthread_join(threads[h], NULL)) {
             printf("Error joining thread\n");
             return;
         }
-        printf("Joined thread %d\n", h);
 
     }
-    printf("for 3\n");
 
 
     for (h = 1; h < num_threads; h++) { // finish ORing all thread results together
         if (h == started1) break;
         copyResult(results1[0]);
         if (COMPRESSION == WAH) {
-            printf("Entering OR\n");
             results1[0]->resultSize = OR_WAH(
                 results1[0]->result,
                 results1[0]->resultCopy,
@@ -197,8 +188,6 @@ void executeQuery() {
         }
     }
 
-    printf("\nMADE IT HERE\n");
-
 
     for(h=0; h<num_threads; h++) { //wait for all the threads to finish
         if(h==started2) {
@@ -232,10 +221,8 @@ void executeQuery() {
     // NB end of things that need to be put into function (OR)
 
     // NB why only 1 AND here, are we AND-ing them together?
-    printf("Compression = %d\n", COMPRESSION);
     copyResult(results1[0]);
     if (COMPRESSION == WAH) {
-        printf("RS before %d\n", results1[0]->resultSize);
         results1[0]->resultSize = AND_WAH(
             results1[0]->result,
             results1[0]->resultCopy,
@@ -243,7 +230,6 @@ void executeQuery() {
             results2[0]->result,
             results2[0]->resultSize
         );
-        printf("RS after: %d\n", results1[0]->resultSize);
 
     }
     else if (COMPRESSION == VAL) {
@@ -258,7 +244,6 @@ void executeQuery() {
 
     if (WRITE_TO_FILE) {
         char buff[BUFF_SIZE];
-        printf("Writing %s to file w/ query path %s\n", results1[0]->result, query_path);
         snprintf(buff, sizeof(buff), "%s%d%s", query_path, qid, ".dat"); // build the output file name based on query id
         FILE *dest = fopen(buff, "wb"); // this is the destination file for the query result
         fwrite(results1[0]->result, sizeof(word_32), results1[0]->resultSize, dest);
@@ -278,7 +263,7 @@ void init()
         char name[BUFF_SIZE];
         snprintf(name, sizeof(name), "%s%d%s", bitmapFile, n, ".dat"); // build the file name based on colNum
         // counting the number of columns there are in that folder
-        if (access(name, F_OK) != -1){ printf("inc n\n"); n++;}
+        if (access(name, F_OK) != -1) n++;
         else break;
     }
     // building the folder for query results
@@ -299,12 +284,9 @@ void init()
     for(; i < BUFF_SIZE; query_path[i++] = '\0');
     strcpy(query_path, results_folder);
     strcat(query_path, "/qID_");
-    printf("In init(): n = %d\n", n);
-    printf("sizeof : %d\n", sizeof(word_32*) * n);
     // XXX: since n = 0 as no other columns are being counted, these are empty arrays
     cols = (word_32 **) malloc(sizeof(word_32 *) * n); // the actual column
     sz = (int *) malloc(sizeof(int) * n); // how many words are in each column (empty --> -1)
-    printf("Cols = %d, sz = %d\n", cols[0], sz[0]);
     ///
     for (; n >= 0; sz[--n] = -1) printf("sz to -1\n"); // no columns have been loaded
     threads = (pthread_t *) malloc(sizeof(pthread_t) * num_threads); // allocate each thread pointer
@@ -325,20 +307,14 @@ int *parseRange(FILE *qFile)
 {
     int i = 0;
     fscanf(qFile, "%d", &i); // first column of the range
-    printf("pR: fscanf1\n");
     getc(qFile); // comma
-    printf("pR: getc\n");
     int j = 0;
     fscanf(qFile, "%d", &j); // second column of the range
-    printf("pR: fscanf2\n");
     int sz = j - i + 2; // size of the range array (number of columns + 1 for size)
-    printf("(i, j) = (%d, %d)\n", i, j);
     int *ret = (int *) malloc(sizeof(int) * sz);
     int k;
     ret[0] = sz - 1; // save number of columns
-    printf("ret[0]\n");
     for (k = 1; k < sz; ret[k++] = i++); // fill array with the right range
-    printf("pR: post for loop\n");
 
     return ret;
 }
@@ -401,7 +377,6 @@ void *startRangeOneThread(void *args)
                 cols[range1[mark]], // FIXME this is 0, causing segfault!
                 sz[range1[mark]]
             );
-            printf("OR-WAH\n");
 
         }
         else if (COMPRESSION == VAL) {

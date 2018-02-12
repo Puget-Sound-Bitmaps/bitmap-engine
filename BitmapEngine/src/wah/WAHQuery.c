@@ -2,7 +2,7 @@
 
  int op_wah(
      word_32*, word_32*, int, word_32*, int,
-     word_32 (*)(word_32*, int, word_32*, word_32),
+     word_32 (*)(word_32, int, word_32*, int*),
      word_32 (*)(word_32*, int*, word_32),
      word_32 (*)(word_32, word_32)
  );
@@ -23,7 +23,7 @@
      int sz0,
      word_32 *col1,
      int sz1,
-     word_32 (*fill_op_fill_wah)(word_32*, int, word_32*, word_32),
+     word_32 (*fill_op_fill_wah)(word_32, int, word_32*, int*),
      word_32 (*fill_op_lit_wah)(word_32*, int*, word_32),
      word_32 (*lit_op_lit_wah)(word_32, word_32)
  )
@@ -252,18 +252,16 @@ word_32 fill_op_fill_wah(word_32 smallFill, int smallT, word_32 *bigFill, int *b
     return ret;
 }
 
-
-
 word_32 fill_op_lit_wah(word_32*, int*, word_32);
 
 word_32 fillORlitWAH(word_32 *fill, int *fillT, word_32 lit)
 {
-    return fill_op_lit_wah(*fill, *fillT, lit);
+    return fill_op_lit_wah(fill, fillT, lit);
 }
 
 word_32 fillANDlitWAH(word_32 *fill, int *fillT, word_32 lit)
 {
-    return fill_op_lit_wah(*fill, *fillT, lit);
+    return fill_op_lit_wah(fill, fillT, lit);
 }
 
 word_32 fill_op_lit_wah(word_32 *fill, int *fillT, word_32 lit)

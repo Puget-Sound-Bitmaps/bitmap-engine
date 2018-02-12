@@ -12,8 +12,8 @@ all: \
 	compress_s \
 
 	# FIXME queries cause segmentation faults
-	# query_u \
 	# query_s \
+	# query_u \
 	# bintest \
 	# testquery \
 

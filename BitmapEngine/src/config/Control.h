@@ -1,21 +1,19 @@
 #ifndef CONTROL_H_
 #define CONTROL_H_
 
-//#include <math.h>
-//#include <sys/time.h>
 #include "Vars.h"
 
 
-
-
 //DEFINE HERE***************************************
-#define CORE OUT_CORE								//IN_CORE or OUT_CORE (recommended: OUT_CORE)
-#define BLOCK_SIZE 32								//kB blocks (recommended: 32)
-#define MAX_NUM_THREADS 4								//define number of threads to use for compression (1,2,3,4)
+// NB: I believe this will need to vary by machine. We will likely be using 64-bit architecture
 
-#define COMPRESSION BBC							//define compression type (WAH or VAL)
+#define CORE OUT_CORE						// IN_CORE or OUT_CORE (recommended: OUT_CORE) NB: I don't know what this is
+#define BLOCK_SIZE 32						// kB blocks (recommended: 32)
+#define MAX_NUM_THREADS 4					// define number of threads to use for compression (1,2,3,4)
+
+#define COMPRESSION WAH							//define compression type (WAH or VAL)
 #define WORD_LENGTH 32								//define compression word length (32/64)
-#define NUM_SEGS 1									//define number of segments per word to use (1/2/4 -> -1 runs optimal segment length)
+#define NUM_SEGS 1							//define number of segments per word to use (1/2/4 -> -1 runs optimal segment length)
 
 //#define QUERY_FILE "Queries/query2.txt"				//the query file to be parsed
 #define WRITE_TO_FILE 1								//write query results to file or not?
@@ -25,6 +23,7 @@
 //#define NUM_TRIALS 5
 #define PAR_READ 1
 
+// NB: I think we need a better name than `word_32` since it could easily be 64 bits.
 //DEFINE HERE*************************************
 #if COMPRESSION == WAH
 	#define FLAG_BITS 1

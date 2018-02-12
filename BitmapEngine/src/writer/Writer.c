@@ -15,9 +15,7 @@ int reformat(char **file) {
     bitmap_file = *file;
     printf("\nFile: %s\n",bitmap_file);
 
-    // printf("\ninside reformat func\n");
-
-    col_files = (FILE **) malloc(sizeof(FILE *) * max);//allocate file pointers
+    col_files = (FILE **) malloc(sizeof(FILE *) * max);
     curr = (word_read *) malloc(sizeof(word_read) * max);
 
     printf("\tUNSTRIPING BEGIN...");
@@ -281,8 +279,8 @@ int readRow(FILE *fp,int *r,int iter) {
 }
 
 char *unstripedExt(char *file) {
-    char *path = (char *) malloc(sizeof(char)*BUFF_SIZE);
-    snprintf(path,BUFF_SIZE,"%s_UNSTRIPED",file);
+    char *path = (char *) malloc(sizeof(char) * BUFF_SIZE);
+    snprintf(path, BUFF_SIZE, "%s_UNSTRIPED", file);
     return path;
 }
 

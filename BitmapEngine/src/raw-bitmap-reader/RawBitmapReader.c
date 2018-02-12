@@ -1,23 +1,28 @@
-#include <stdio.h>
 #include "../Core.h"
 
-pthread_t *threads;//thread pointers
-char compressed_path[BUFF_SIZE];//the file location for the compressed files
-char col_path[BUFF_SIZE];//the path for the temporary column data files
+// TODO a lot of these comments are unnecessary!
+// alternatively, the memory and structures could be passed as *arguments* to these functions rather than having to define them here.
+// better yet create a struct that contains all this stuff
+
+pthread_t *threads; // thread pointers
+char compressed_path[BUFF_SIZE]; // the file location for the compressed files
+char col_path[BUFF_SIZE]; // the path for the temporary column data files
 char *uncompressed_path;
-int next;//next column ready to be compressed (only used for COL_FORMAT)
-pthread_mutex_t mut;//mutex for locking threads
-int numCols;//number of columns
-int extra;//number of files in last striped file (only used for STRIPED)
-struct params **toCompress;//only used for OLD STRIPED (weird threading) format -->probably can delete
-int size;//number of words in each column
-int numFiles;//number of files (only used for STRIPED)
-int currFileNum;//current file number we're scanning (only used for STRIPED)
-int blockWords;//number of words can scan per block (per thread for STRIPED)
-int colNum;//current column number file we're scanning (only used for STRIPED)
-int moreFiles;//whether we're done readifng all the files (only used for STRIPED)
-blockSeg **segs;//structs to hold data to pass to compressor
-int id[MAX_NUM_THREADS];//threads ids
+int next; // next column ready to be compressed (only used for COL_FORMAT)
+pthread_mutex_t mut; // mutex for locking threads
+// NB: XXX: I think this might not be necessary, as we can assign a column number as part of the thread
+// arguments, instead of using a shared variable.
+int numCols; // number of columns
+int extra; // number of files in last striped file (only used for STRIPED)
+struct params **toCompress; // only used for OLD STRIPED (weird threading) format -->probably can delete
+int size; // number of words in each column
+int numFiles; // number of files (only used for STRIPED)
+int currFileNum; // current file number we're scanning (only used for STRIPED)
+int blockWords; // number of words can scan per block (per thread for STRIPED)
+int colNum; // current column number file we're scanning (only used for STRIPED)
+int moreFiles; // whether we're done readifng all the files (only used for STRIPED)
+blockSeg **segs; // structs to hold data to pass to compressor
+int id[MAX_NUM_THREADS]; // threads ids TODO rename to thread_id
 //word_32 *readingBuffer;//buffer to read data into from columns (only used for STRIPED?)
 //word_32 **buffer;
 
@@ -30,46 +35,49 @@ int num_threads;
 int striped;
 int format;
 
-struct params {//struct for thread parameters
+struct params { // struct for thread parameters TODO rename to thread_params
     word_32 *words;
     int num;
 };
 
 FILE *currFile;
-blockSeg **nextCol;//next segment each thread is set to compress (start of each stack)
-blockSeg **lastCol;//the segment on the top of the stack
+blockSeg **nextCol; // next segment each thread is set to compress (start of each stack)
+blockSeg **lastCol; // the segment on the top of the stack
 
 
 /**
  * Initializing all memory/structures needed at start
  */
 int initCompression() {
-    threads = (pthread_t *) malloc(sizeof(pthread_t) * num_threads);//allocate each thread pointer
-    pthread_mutex_init(&mut,NULL);//
+    threads = (pthread_t *) malloc(sizeof(pthread_t) * num_threads); // allocate each thread pointer
+    pthread_mutex_init(&mut, NULL); // NB: better name than mut?
 
-    if(striped==UNSTRIPED) {
-        segs = (blockSeg **) malloc(sizeof(blockSeg *) *num_threads);//pointer for each thread to segment that it's compressing
+    // NB: assume unstriped for DS purposes. `unstriped` should remain supported, but not tested
+    if (striped == UNSTRIPED) {
+        segs = (blockSeg **) malloc(sizeof(blockSeg *) * num_threads); // pointer for each thread to segment that it's compressing
     }
-    else if(striped==STRIPED) {
-        nextCol = (blockSeg **) malloc(sizeof(blockSeg **) * num_threads);//pointers for the front of the queue
-        lastCol = (blockSeg **) malloc(sizeof(blockSeg **) * num_threads);//pointers for the end for the queue
+    else if (striped == STRIPED) {
+        nextCol = (blockSeg **) malloc(sizeof(blockSeg **) * num_threads); // pointers for the front of the queue
+        lastCol = (blockSeg **) malloc(sizeof(blockSeg **) * num_threads); // pointers for the end for the queue
         currWord = (word_32 *) malloc(sizeof(word_32) * num_threads);
         writingTo = (FILE **) malloc(sizeof(FILE *) * num_threads);
     }
 
-    int i;
-    for(i=0; i<num_threads; i++) {
-        id[i]=i;
-        if(striped==STRIPED) {
-            nextCol[i] = (blockSeg *) malloc(sizeof(blockSeg));
-            nextCol[i]->toCompress = malloc(sizeof(word_read)*2);
-            nextCol[i]->next=NULL;
-            nextCol[i]->status = NOT_VALID;
-            lastCol[i]=nextCol[i];
-        }
-    }
-    return 1;
 
+    int i;
+    for (i = 0; i < num_threads; i++) {
+        id[i] = i; // assign thread id
+
+        if (striped == STRIPED) { // allocate blockSeg structures for striped compression
+            nextCol[i] = (blockSeg *) malloc(sizeof(blockSeg));
+            nextCol[i]->toCompress = malloc(sizeof(word_read) * 2);
+            nextCol[i]->next = NULL;
+            nextCol[i]->status = NOT_VALID;
+            lastCol[i] = nextCol[i];
+        }
+
+    }
+    return 1; // NB: why 1??
 }
 
 void clearMem() {
@@ -77,27 +85,30 @@ void clearMem() {
     int i;
 
     free(threads);
-    if(striped==UNSTRIPED) {
-        for(i=0; i>num_threads; i++) {
+    if (striped == UNSTRIPED) {
+        for (i = 0; i < num_threads; i++) {
             free(segs[i]->toCompress);
             free(segs[i]);
         }
         free(segs);
-    }
-    if(striped==STRIPED) {
-        for(i=0; i<num_threads; i++) {
+    } // NB else?
+    if (striped == STRIPED) {
+        for (i = 0; i < num_threads; i++) {
             free(nextCol[i]->toCompress);
             free(nextCol[i]);
         }
 
         free(nextCol);
-        //free(lastCol);
+        //free(lastCol); // NB why not?
         free(writingTo);
         free(currWord);
     }
 }
 
 //original bitmap file, STRIPED/UNSTRIPED, WAH/VAL, num_threads
+/**
+ * @return compression time
+ */
 double compress(char *file, int str, int form, int n) {
     striped = str;
     num_threads = n;
@@ -105,18 +116,21 @@ double compress(char *file, int str, int form, int n) {
 
     initCompression();
 
-    if(str==UNSTRIPED) {
-        uncompressed_path=unstripedExt(file);
-        snprintf(compressed_path,BUFF_SIZE,"%s_%d_COMPRESSED/",uncompressed_path,num_threads);
+    // generate filepath for compression output
+    if (str == UNSTRIPED) {
+        uncompressed_path = unstripedExt(file);
+        snprintf(compressed_path, BUFF_SIZE, "%s_%d_COMPRESSED/", uncompressed_path, num_threads);
     }
     else {
-        uncompressed_path=stripedExt(file,num_threads);
-        snprintf(compressed_path,BUFF_SIZE,"%s_COMPRESSED/",uncompressed_path);
+        uncompressed_path = stripedExt(file, num_threads);
+        snprintf(compressed_path, BUFF_SIZE, "%s_COMPRESSED/", uncompressed_path);
     }
 
-    mkdir(compressed_path,S_IRWXU);
+    // create directorry for compression output
+    mkdir(compressed_path, S_IRWXU);
 
     // XXX - snprintf is not supported on some linux machines (according to professor chiu, so comment the snprintf() function call that was included by alexia)
+    // NB: as far as I can tell, `snprintf()` works on Ubuntu.
     // snprintf(uncompressed_path,BUFF_SIZE,"%s/col_",uncompressed_path);
     strcat(uncompressed_path, "/col_");
     strcat(compressed_path, "/col_");
@@ -130,39 +144,41 @@ double compress(char *file, int str, int form, int n) {
 
     double start = rtclock();
 
-    if(striped==STRIPED) compressStriped();
+    if (striped == STRIPED) compressStriped();
     else compressUnstriped();
 
     double end = rtclock();
-    return end-start;
+    return end - start;
 }
 
 /*
  * Runs basic overhead needed to prepare the program for compression
  */
-void runOverhead() {
-    if(striped==UNSTRIPED) {
+void runOverhead()
+{
+    if (striped == UNSTRIPED) {
         numCols = 0;
-        while(1) {
+        while (1) { // TODO add boolean support in Core.h
             char temp_name[BUFF_SIZE];
-            snprintf(temp_name,BUFF_SIZE,"%s%d.dat",uncompressed_path,numCols);
+            snprintf(temp_name, BUFF_SIZE, "%s%d.dat", uncompressed_path, numCols);
 
-            if(size==0) {
+            if (size == 0) {
                 struct stat st;
                 stat(temp_name, &st);
-                size = (st.st_size)/sizeof(word_read);//this is number of words in each column file (same in each column)
+                size = (st.st_size) / sizeof(word_read); // this is number of words in each column file (same in each column)
             }
-            //counting the number of columns there are in that folder
-            if(access(temp_name,F_OK) != -1) { //if this file exists
-                numCols++;//count it
-                continue;//and keep counting
+
+            // counting the number of columns there are in that folder
+            if (access(temp_name, F_OK) != -1) { // if this file exists
+                numCols++; // count it
+                continue; // and keep counting
             }
-            else { //this file doesn't exit so we know how many columns exist
+            else { // this file doesn't exi(s)t so we know how many columns exist
                 break;
             }
-        }
-        if(CORE==OUT_CORE) {
-            blockWords = BLOCK_SIZE*1000/sizeof(word_read);//this is how many words we will be scanning every time
+        } // TODO understand the difference between IN_ and OUT_CORE
+        if (CORE == OUT_CORE) {
+            blockWords = BLOCK_SIZE * 1000 / sizeof(word_read); // this is how many words we will be scanning every time
 
             //TODO: implement VAL here too (focusing on WAH right now)
             //if(COMPRESSION==VAL){
@@ -277,15 +293,15 @@ int readNextBlock(FILE *toRead, int off, int colsPerFile, blockSeg **saving) {
  */
 void compressStriped() {
     int i;
-    for(i=0; i<num_threads; i++) { //start each thread going
-        if(pthread_create(&threads[i],NULL,startThreadStriped,(void *)(&(id[i])))) {
+    for (i = 0; i < num_threads; i++) { //start each thread going
+        if (pthread_create(&threads[i], NULL, startThreadStriped, (void *)(&(id[i])))) {
             printf("Error creating thread\n");
             return;
         }
     }
 
-    for(i=0; i<num_threads; i++) { //wait for all the threads to finish
-        if(pthread_join(threads[i],NULL)) {
+    for (i = 0; i < num_threads; i++) { //wait for all the threads to finish
+        if (pthread_join(threads[i], NULL)) {
             printf("Error joining thread\n");
             return;
         }
@@ -299,16 +315,17 @@ void compressStriped() {
 /**
  * Compresses the next column that has not been compressed yet
  */
-void *startThreadStriped(void *param) {
+void *startThreadStriped(void *param)
+{
     int *id = (int *) param;
-    while(1) {
+    while (1) {
         pthread_mutex_lock(&mut);
-        if(nextCol[*id]->status==NOT_VALID || nextCol[*id]->status==READING) {
+        if (nextCol[*id]->status == NOT_VALID || nextCol[*id]->status == READING) {
 
-            if(moreFiles) {
+            if (moreFiles) {
                 blockSeg **tempData = (blockSeg **) malloc(sizeof(blockSeg *) * num_threads);
                 int i;
-                for(i=0; i<num_threads; i++) {
+                for(i = 0; i<num_threads; i++) {
                     lastCol[i]->next = (blockSeg *) malloc(sizeof(blockSeg));
                     tempData[i] = lastCol[i]->next;
                     tempData[i]->status = READING;
@@ -425,20 +442,19 @@ void printQ() {
  * Starts compressing the bitmap data after saved in separate column files
  */
 void compressUnstriped() {
-    //printf("Compress Unstriped\n");
 
     int i;
-    for(i=0; i<num_threads; i++) { //start each thread going
-        segs[i] = (blockSeg *) malloc(sizeof(blockSeg));//allocate the segment pointer
-        segs[i]->toCompress = (word_read *) malloc(sizeof(word_read) * blockWords);//allocate the word array buffer in the segment struct
-        if(pthread_create(&threads[i],NULL,compressNext,(void *)(&(id[i])))) {
+    for (i = 0; i < num_threads; i++) { // start each thread going
+        segs[i] = (blockSeg *) malloc(sizeof(blockSeg)); // allocate the segment pointer
+        segs[i]->toCompress = (word_read *) malloc(sizeof(word_read) * blockWords); // allocate the word array buffer in the segment struct
+        if (pthread_create(&threads[i], NULL, compressNext, (void *)(&(id[i])))) {
             printf("Error creating thread\n");
             return;
         }
     }
 
-    for(i=0; i<num_threads; i++) { //wait for all the threads to finish
-        if(pthread_join(threads[i],NULL)) {
+    for (i = 0; i < num_threads; i++) { // wait for all the threads to finish
+        if (pthread_join(threads[i], NULL)) {
             printf("Error joining thread\n");
             return;
         }
@@ -449,15 +465,16 @@ void compressUnstriped() {
  * Compresses the next column that has not been compressed yet
  */
 void *compressNext(void *param) {
-    int n = -1;//hasn't been assigned a column yet
+    int n = -1; // hasn't been assigned a column yet
     int *id = (int *) param;
-    while(n<numCols) {
-        pthread_mutex_lock(&mut);//lock everything
-        n=(next++);//find out which column we need to compress (and increment for the next thread to compress)
-        pthread_mutex_unlock(&mut);//unlock it
+    while (n < numCols) {
+        pthread_mutex_lock(&mut); // lock n
+        // find out which column we need to compress (and increment for the next thread to compress)
+        n = (next++); // NB: why not just assign each thread a column number
+        pthread_mutex_unlock(&mut); // unlock it
 
-        if(n<numCols) { //if there's still another column to compress
-            compressColumn(n,*id);//go for it
+        if (n < numCols) { // if there's still another column to compress
+            compressColumn(n, *id);//go for it
         }
     }
     return NULL;
@@ -470,49 +487,52 @@ void *compressNext(void *param) {
  */
 void compressColumn(int col, int threadNum) {
     int runs = 1;
-    if(NUM_SEGS==-1) runs=3;
+    if (NUM_SEGS == -1) runs = 3;
     int i;
-    int length = BASE_LEN;
-    if(NUM_SEGS>-1) length = (WORD_LENGTH-FLAG_BITS)/NUM_SEGS;
+    int length = BASE_LEN; // NB: 31 or 63 for WAH
+    // FLAG_BITS = 1 for WAH
+    if (NUM_SEGS > -1) length = (WORD_LENGTH - FLAG_BITS) / NUM_SEGS;
 
     unsigned int min = 0;
     min--;
-    int optimal=0;
+    int optimal = 0;
 
-    for(i=0; i<runs; i++) {
+    for (i = 0; i < runs; i++) {
 
         char reading[BUFF_SIZE];
-        snprintf(reading,BUFF_SIZE,"%s%d.dat",uncompressed_path,col);
-        FILE *ptr = fopen(reading,"rb");//open the uncompressed file
-        int read=blockWords;//will hold how many words have been successfully read
+        snprintf(reading, BUFF_SIZE, "%s%d.dat", uncompressed_path, col);
+        FILE *ptr = fopen(reading, "rb"); // open the uncompressed file
+        int read = blockWords; // will hold how many words have been successfully read
 
-        segs[threadNum]->colNum = col;//save colNumber of this block
-        if(CORE==OUT_CORE) segs[threadNum]->status=READ_FIRST;//we know it's the first one
+        segs[threadNum]->colNum = col; // save colNumber of this block
+        if (CORE == OUT_CORE) segs[threadNum]->status = READ_FIRST; // we know it's the first one
         else segs[threadNum]->status = FIRST_LAST;
 
         char writing[BUFF_SIZE];
-        snprintf(writing,BUFF_SIZE,"%s%d.dat",compressed_path,col);
+        snprintf(writing, BUFF_SIZE, "%s%d.dat", compressed_path, col);
 
-        segs[threadNum]->colFile = fopen(writing,"wb");//open the respective file for writing
+        segs[threadNum]->colFile = fopen(writing, "wb"); // open the respective file for writing
         int numWords = 0;
 
-        while(read==blockWords) { //while we still can read
-            read = fread(segs[threadNum]->toCompress, sizeof(word_read), blockWords, ptr);//transfer over all the words
-            if(read<blockWords) {
-                if(segs[threadNum]->status==READ_FIRST) segs[threadNum]->status=FIRST_LAST;
+        while (read == blockWords) { // while we still can read
+            read = fread(segs[threadNum]->toCompress, sizeof(word_read), blockWords, ptr); // transfer over all the words
+            if (read < blockWords) {
+                if (segs[threadNum]->status == READ_FIRST) segs[threadNum]->status = FIRST_LAST;
                 else segs[threadNum]->status = LAST_BLOCK;
             }
             segs[threadNum]->size = read;//and save how many words there are in there
 
-            if(format==WAH) compressUsingWAH(segs[threadNum]);//compress it
-            else if(format==VAL) numWords += compressUsingVAL(segs[threadNum],length);
+            if (format == WAH) compressUsingWAH(segs[threadNum]);//compress it
+            else if (format == VAL) numWords += compressUsingVAL(segs[threadNum],length);
             ///////////////////////////////////////////
             //adding in BBC (TAKE AWAY AFTER TESTING)//
             ///////////////////////////////////////////
             else if(format==BBC) bbcCompress(segs[threadNum]);
-            if(CORE==IN_CORE) break;
+
+            if (CORE == IN_CORE) break;
+
             segs[threadNum]->status = VALID;//not at the beginning anymore
-            if(read<blockWords) { //if we reached the end of the file
+            if (read < blockWords) { //if we reached the end of the file
                 fclose(segs[threadNum]->colFile);//close the compressed file
                 fclose(ptr);//close the uncompressed column data file
                 break;//and leave

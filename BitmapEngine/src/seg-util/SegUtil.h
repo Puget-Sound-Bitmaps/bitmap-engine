@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include "../config/Control.h"
 
+// NB why does this start at -1, I suppose it is arbitrary.
 #define LITERAL -1//a literal word (0...0111)
 #define ZERO_LIT 0//a literal of all zeros (000000...00)
 #define ONE_LIT 1//a literal of all ones(01111111..11)
@@ -44,5 +45,3 @@ word_32 getFillType(word_32,word_32);
 
 void initUtilSegs(int);
 #endif /* SEGUTIL_H_ */
-
-

@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "../Core.h"
 
 // #include <stdlib.h>
@@ -9,19 +8,19 @@
  */
 int AND_VAL(word_32 *ret, word_32 *col0, int sz0, word_32 *col1, int sz1) {
     int c0,c1,s0,s1, index;
-    index = 0;//position of next word being written to the result
-    c0=c1=1;
-    s0=col0[0];
-    s1=col1[0];
-    word_32 decodeLength=s0;
+    index = 0;  // position of next word being written to the result
+    c0 = c1 = 1;
+    s0 = col0[0];
+    s1 = col1[0];
+    word_32 decodeLength = s0;
 
-    if(DECODE==DECODE_UP) {
-        if(s0<s1) decodeLength=s1;
+    if (DECODE == DECODE_UP) {
+        if(s0 < s1) decodeLength = s1;
     }
     else {
-        if(s1<s0) decodeLength=s1;
+        if(s1 < s0) decodeLength = s1;
     }
-    ret[index++]=decodeLength;
+    ret[index++] = decodeLength;
 
     activeWord *activeRead0 = initActiveWord(s0);
     activeWord *activeRead1 = initActiveWord(s1);
@@ -29,22 +28,22 @@ int AND_VAL(word_32 *ret, word_32 *col0, int sz0, word_32 *col1, int sz1) {
     activeWord *activeAligned1 = initActiveWord(decodeLength);
     activeWord *resultTemp = initActiveWord(decodeLength);
 
-    activeWord *previous = initActiveWord(decodeLength);//where we store temporary result (for appending)
-    previous->currSeg=-1;//haven't added anything to it yet
+    activeWord *previous = initActiveWord(decodeLength);    // where we store temporary result (for appending)
+    previous->currSeg=-1;   // haven't added anything to it yet
 
-    //save first word into active
+    // save first word into active
     updateActiveWord(activeRead0,col0[c0]);
     updateActiveWord(activeRead1,col1[c1]);
 
-    //nothing's been decoded yet
-    activeAligned0->numSegs=0;
-    activeAligned1->numSegs=0;
+    // nothing's been decoded yet
+    activeAligned0->numSegs = 0;
+    activeAligned1->numSegs = 0;
 
-    while(c0<=sz0 && c1<=sz1) { //keep going while still more words to process
+    while (c0 <= sz0 && c1 <= sz1) { // keep going while still more words to process
 
-        int cont0=0;
-        int cont1=0;
-        if(activeAligned0->currSeg>=activeAligned0->numSegs) { //need to decode something in the first column
+        int cont0 = 0;
+        int cont1 = 0;
+        if (activeAligned0->currSeg >= activeAligned0->numSegs) { //need to decode something in the first column
             cont0 = decodeNext(activeRead0,activeAligned0);//try to decode something
             if(cont0==-1) { //need to update to finish decoding
                 if(++c0<sz0) updateActiveWord(activeRead0,col0[c0]);//keep going
@@ -60,14 +59,14 @@ int AND_VAL(word_32 *ret, word_32 *col0, int sz0, word_32 *col1, int sz1) {
                 cont1=decodeNext(activeRead1,activeAligned1);//keep decoding with the new word
             }
         }
-        if(cont0) { //decoding caused read to be exhausted so need to move onto next word in column
-            if(++c0<sz0) updateActiveWord(activeRead0,col0[c0]);
+        if (cont0) { // decoding caused read to be exhausted so need to move onto next word in column
+            if (++c0 < sz0) updateActiveWord(activeRead0, col0[c0]);
         }
         if(cont1) {
             if(++c1<sz1) updateActiveWord(activeRead1,col1[c1]);
         }
 
-        //now we go through each segment in the aligned segments, and them in the result, and append the result
+        // now we go through each segment in the aligned segments, and them in the result, and append the result
 
         while(activeAligned0->currSeg<activeAligned0->numSegs && activeAligned1->currSeg<activeAligned1->numSegs) {
 
@@ -299,7 +298,7 @@ int OR_VAL(word_32 *ret, word_32 *col0, int sz0, word_32 *col1, int sz1) {
         }
 
         //now we go through each segment in the aligned segments, and them in the result, and append the result
-        while(activeAligned0->currSeg<activeAligned0->numSegs && activeAligned1->currSeg<activeAligned1->numSegs) {
+        while (activeAligned0->currSeg<activeAligned0->numSegs && activeAligned1->currSeg<activeAligned1->numSegs) {
             if(activeAligned0->flag[activeAligned0->currSeg]==1 && activeAligned1->flag[activeAligned1->currSeg]==1) { //two fills
                 word_32 runSize0 = getNumRuns(activeAligned0->seg[activeAligned0->currSeg],activeAligned0->length);
                 word_32 runSize1 = getNumRuns(activeAligned1->seg[activeAligned1->currSeg],activeAligned1->length);
@@ -319,10 +318,10 @@ int OR_VAL(word_32 *ret, word_32 *col0, int sz0, word_32 *col1, int sz1) {
         }
     }
 
-    //once we've gone through all words in both columns
-    for(; previous->currSeg<previous->numSegs; previous->currSeg++) { //clear out the rest of the previous
-        previous->flag[previous->currSeg]=0;
-        previous->seg[previous->currSeg]=0;
+    // once we've gone through all words in both columns
+    for(; previous->currSeg < previous->numSegs; previous->currSeg++) { //clear out the rest of the previous
+        previous->flag[previous->currSeg] = 0;
+        previous->seg[previous->currSeg] = 0;
     }
     ret[index++] = createWord(previous);//save the last word into the result
 

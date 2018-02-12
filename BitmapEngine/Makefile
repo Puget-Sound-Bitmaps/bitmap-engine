@@ -1,21 +1,17 @@
 SRC := src
+TST := tst
 BIN := bin
 
 bitmap_out := ../BitmapWorkloadGenerator/bin/bitmap_out.txt
 query_out := ../BitmapWorkloadGenerator/bin/query_out.txt
 
-all: \
-	clean \
-	main \
-	format \
-	compress_u \
-	compress_s \
+all: clean main format compress_u compress_s
 
-	# FIXME queries cause segmentation faults
-	# query_s \
-	# query_u \
-	# bintest \
-	# testquery \
+# FIXME queries cause segmentation faults
+# query_s \
+# query_u \
+# bintest \
+# testquery \
 
 clean:
 	@echo "Setting Up Output Directory"
@@ -49,38 +45,32 @@ format:
 	@$(BIN)/main F $(bitmap_out)
 
 # unstriped compression, single thread
-# $ ./main C <bitmap_file> <num_threads> UNSTRIPED
+# $ ./main C <bitmap_file> UNSTRIPED <num_threads>
 compress_u:
 	@echo "Unstriped Compression; Single Thread"
-	@$(BIN)/main C $(bitmap_out) 1 UNSTRIPED
+	@$(BIN)/main C $(bitmap_out) UNSTRIPED 1
 
 # striped compression, single thread
-# $ ./main C <bitmap_file> <num_threads> STRIPED
+# $ ./main C <bitmap_file> STRIPED <num_threads>
 compress_s:
 	@echo "Striped Compression; Single Thread"
-	@$(BIN)/main C $(bitmap_out) 1 STRIPED
+	@$(BIN)/main C $(bitmap_out) STRIPED 1
 
 # query unstriped
 # $ ./main Q <BITMAP_PATH> <QUERY_FILE> <NUM_THREADS>
 query_u:
 	@echo "Unstriped Query"
-	@$(BIN)/main Q \
-		$(bitmap_out)_UNSTRIPED_1_COMPRESSED \
-		$(query_out) \
-		1
+	@$(BIN)/main Q $(bitmap_out)_UNSTRIPED_1_COMPRESSED $(query_out) 1
 
 # query striped
 # $ ./main Q <BITMAP_PATH> <QUERY_FILE> <NUM_THREADS>
 query_s:
 	@echo "Striped Query"
-	@$(BIN)/main Q \
-		$(bitmap_out)_STRIPED_1_COMPRESSED \
-		$(query_out) \
-		1
+	@$(BIN)/main Q $(bitmap_out)_STRIPED_1_COMPRESSED $(query_out) 1
 
 bintest:
 	@echo "Compiling `bintest` Program"
-	@gcc -Wall -o $(BIN)/bintest $(SRC)/binarytest.c
+	@gcc -Wall -o $(BIN)/bintest $(TST)/binarytest.c
 
 testquery:
 	@echo "Compiling `mainquery` Program"

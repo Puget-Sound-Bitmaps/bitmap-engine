@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
             time = compress(bitmap_file, STRIPED, WAH, num_threads);
         }
 
-        printf("time: %f...", time);
+        printf("time: %f...\n", time);
         /* open result file (appending to end) */
         FILE *results_file = fopen(results_name, "a");
         if (results_file == NULL) {

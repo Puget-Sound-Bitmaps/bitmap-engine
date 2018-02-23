@@ -1,93 +1,102 @@
 #include "../Core.h"
 
- int op_wah(
-     word_32*, word_32*, int, word_32*, int,
-     word_32 (*)(word_32, int, word_32*, int*),
-     word_32 (*)(word_32*, int*, word_32),
-     word_32 (*)(word_32, word_32)
- );
+int op_wah(
+    word_32*, word_32*, int, word_32*, int,
+    word_32 (*)(word_32, int, word_32*, int*),
+    word_32 (*)(word_32*, int*, word_32),
+    word_32 (*)(word_32, word_32)
+);
 
- int OR_WAH(word_32 *ret, word_32 *col0, int sz0, word_32 *col1, int sz1)
- {
-     return op_wah(ret, col0, sz0, col1, sz1, &fillORfillWAH, &fillORlitWAH, &litORlitWAH);
- }
+/**
+ * OR two bit vectors together.
+ * @param ret: array of results
+ * @param col0: first column to query on
+ * @param sz0: size of first column
+ * @param col1, sz1 similar.
+ */
+int OR_WAH(word_32 *ret, word_32 *col0, int sz0, word_32 *col1, int sz1)
+{
+    return op_wah(ret, col0, sz0, col1, sz1, &fillORfillWAH,
+        &fillORlitWAH, &litORlitWAH);
+}
 
- int AND_WAH(word_32 *ret, word_32 *col0, int sz0, word_32 *col1, int sz1)
- {
-     return op_wah(ret, col0, sz0, col1, sz1, &fillANDfillWAH, &fillANDlitWAH, &litANDlitWAH);
- }
+int AND_WAH(word_32 *ret, word_32 *col0, int sz0, word_32 *col1, int sz1)
+{
+    return op_wah(ret, col0, sz0, col1, sz1, &fillANDfillWAH,
+        &fillANDlitWAH, &litANDlitWAH);
+}
 
- int op_wah(
-     word_32 *ret,
-     word_32 *col0,
-     int sz0,
-     word_32 *col1,
-     int sz1,
-     word_32 (*fill_op_fill_wah)(word_32, int, word_32*, int*),
-     word_32 (*fill_op_lit_wah)(word_32*, int*, word_32),
-     word_32 (*lit_op_lit_wah)(word_32, word_32)
- )
- {
-     int c0;       /* word number we're scanning from col0 */
-     int c1;
-     int d;        /* spot we're saving into the result */
-     c0 = c1 = 1;
-     d = 0;        /* start saving into the first spot */
+int op_wah(
+    word_32 *ret,
+    word_32 *col0,
+    int sz0,
+    word_32 *col1,
+    int sz1,
+    word_32 (*fill_op_fill_wah)(word_32, int, word_32*, int*),
+    word_32 (*fill_op_lit_wah)(word_32*, int*, word_32),
+    word_32 (*lit_op_lit_wah)(word_32, word_32)
+)
+{
+    int c0;       /* word number we're scanning from col0 */
+    int c1;
+    int d;        /* spot we're saving into the result */
+    c0 = c1 = 1;
+    d = 0;        /* start saving into the first spot */
 
-     word_32 w0 = col0[c0++];
-     word_32 w1 = col1[c1++];
-     int t0 = getType(w0, WORD_LENGTH);
-     int t1 = getType(w1, WORD_LENGTH);
+    word_32 w0 = col0[c0++];
+    word_32 w1 = col1[c1++];
+    int t0 = getType(w0, WORD_LENGTH);
+    int t1 = getType(w1, WORD_LENGTH);
 
-     while (c0 <= sz0 && c1 <= sz1) {
-         word_32 toAdd;
-         if (t0 < ZERO_RUN && t1 < ZERO_RUN) {
-             toAdd = lit_op_lit_wah(w0, w1);
-             w0 = col0[c0++];
-             t0 = getType(w0, WORD_LENGTH);
-             w1 = col1[c1++];
-             t1 = getType(w1, WORD_LENGTH);
-         }
-         else if (t0 < ZERO_RUN || t1 < ZERO_RUN) {
-             if (t0 < ZERO_RUN) {
-                 toAdd = fill_op_lit_wah(&w1, &t1, w0);
-                 w0 = col0[c0++];
-                 t0 = getType(w0,WORD_LENGTH);
-             }
-             else {
-                 toAdd = fill_op_lit_wah(&w0, &t0, w1);
-                 w1 = col1[c1++];
-                 t1 = getType(w1,WORD_LENGTH);
-             }
-         }
-         else {
-             if ((w0 << 2) < (w1 << 2)) {
-                 toAdd = fill_op_fill_wah(w0, t0, &w1, &t1);
-                 w0 = col0[c0++];
-                 t0 = getType(w0, WORD_LENGTH);
-             }
-             else if ((w0 << 2) > (w1 << 2)) {
-                 toAdd = fill_op_fill_wah(w1, t1, &w0, &t0);
-                 w1 = col1[c1++];
-                 t1 = getType(w1,WORD_LENGTH);
-             }
-             else {
-                 toAdd = lit_op_lit_wah(w0, w1);
-                 w0 = col0[c0++];
-                 t0 = getType(w0, WORD_LENGTH);
-                 w1 = col1[c1++];
-                 t1 = getType(w1, WORD_LENGTH);
-             }
-         }
-         if (d >= 1) {
-             appendWAH(ret, toAdd, &d);
-         }
-         else {
-             ret[++d] = toAdd;
-         }
-     }
-     return d + 1;
- }
+    while (c0 <= sz0 && c1 <= sz1) {
+        word_32 toAdd;
+        if (t0 < ZERO_RUN && t1 < ZERO_RUN) {
+            toAdd = lit_op_lit_wah(w0, w1);
+            w0 = col0[c0++];
+            t0 = getType(w0, WORD_LENGTH);
+            w1 = col1[c1++];
+            t1 = getType(w1, WORD_LENGTH);
+        }
+        else if (t0 < ZERO_RUN || t1 < ZERO_RUN) {
+            if (t0 < ZERO_RUN) {
+                toAdd = fill_op_lit_wah(&w1, &t1, w0);
+                w0 = col0[c0++];
+                t0 = getType(w0,WORD_LENGTH);
+            }
+            else {
+                toAdd = fill_op_lit_wah(&w0, &t0, w1);
+                w1 = col1[c1++];
+                t1 = getType(w1,WORD_LENGTH);
+            }
+        }
+        else {
+            if ((w0 << 2) < (w1 << 2)) {
+                toAdd = fill_op_fill_wah(w0, t0, &w1, &t1);
+                w0 = col0[c0++];
+                t0 = getType(w0, WORD_LENGTH);
+            }
+            else if ((w0 << 2) > (w1 << 2)) {
+                toAdd = fill_op_fill_wah(w1, t1, &w0, &t0);
+                w1 = col1[c1++];
+                t1 = getType(w1,WORD_LENGTH);
+            }
+            else {
+                toAdd = lit_op_lit_wah(w0, w1);
+                w0 = col0[c0++];
+                t0 = getType(w0, WORD_LENGTH);
+                w1 = col1[c1++];
+                t1 = getType(w1, WORD_LENGTH);
+            }
+        }
+        if (d >= 1) {
+            appendWAH(ret, toAdd, &d);
+        }
+        else {
+            ret[++d] = toAdd;
+        }
+    }
+    return d + 1;
+}
 
 /*
  * Adds the wordToAdd to the end (d=last added position) of the addTo sequence
@@ -297,7 +306,7 @@ word_32 fill_op_lit_wah(word_32 *fill, int *fillT, word_32 lit)
  */
 word_32 litORlitWAH(word_32 lit1, word_32 lit2)
 {
-    return lit1 | lit2;//just or them together
+    return lit1 | lit2; // just or them together
 }
 
 /*
@@ -305,5 +314,5 @@ word_32 litORlitWAH(word_32 lit1, word_32 lit2)
  */
 word_32 litANDlitWAH(word_32 lit1, word_32 lit2)
 {
-    return lit1 & lit2;//just and them together
+    return lit1 & lit2; //just and them together
 }

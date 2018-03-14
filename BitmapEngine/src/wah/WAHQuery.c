@@ -40,7 +40,7 @@ int op_wah(
     int c0;       /* word number we're scanning from col0 */
     int c1;
     int d;        /* spot we're saving into the result */
-    c0 = c1 = 1;
+    c0 = c1 = 0;
     d = 0;        /* start saving into the first spot */
 
     word_32 w0 = col0[c0++];
@@ -92,10 +92,10 @@ int op_wah(
             appendWAH(ret, toAdd, &d);
         }
         else {
-            ret[++d] = toAdd;
+            ret[d++] = toAdd;
         }
     }
-    return d + 1;
+    return d ;
 }
 
 /*

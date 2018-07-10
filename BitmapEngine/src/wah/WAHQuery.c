@@ -98,7 +98,10 @@ int op_wah(
         /* If this is the first word, append it to the end of the result
          * column. */
         if (d >= 1) {
-            appendWAH(ret, toAdd, &d);
+            if(appendWAH(ret, toAdd, &d)) {
+                puts("AppendWAH failure");
+                return -1;
+            }
         }
         /* This is the first word, which is one of two things:
          * number of words, if being used for VAL
@@ -113,19 +116,26 @@ int op_wah(
     return d + 1;
 }
 
+unsigned int veclen(word_32 *v)
+{
+    return sizeof(v) / sizeof(word_32);
+}
+
 /**
  * Adds the wordToAdd to the end (d = last added position) of the addTo sequence
  * wordToAdd will be consolidated into position if possible and if not (or the
  * leftover) will go into ret[d + 1].
  */
-void appendWAH(word_32 *addTo, word_32 wordToAdd, int *d)
+int appendWAH(word_32 *addTo, word_32 wordToAdd, int *d)
 {
-
     int prevT = getType(addTo[*d], WORD_LENGTH); /* type of the last added */
-
     if (prevT == LITERAL) { /* there's no way to consolidate */
+        if (*d > veclen(addTo) - 1) {
+            puts("Error: cannot append words.");
+            return 1;
+        }
         addTo[++(*d)] = wordToAdd;
-        return;
+        return 0;
     }
     int addT = getType(wordToAdd, WORD_LENGTH); // type of the one we're adding
 
@@ -143,7 +153,7 @@ void appendWAH(word_32 *addTo, word_32 wordToAdd, int *d)
             }
             /* we've successfully added everything */
             if (wordToAdd == minCheck) {
-                return;
+                return 0;
             }
             /* ran out of space */
             else {
@@ -153,7 +163,7 @@ void appendWAH(word_32 *addTo, word_32 wordToAdd, int *d)
                     wordToAdd = 0;
                 }
                 addTo[++(*d)] = wordToAdd;
-                return;
+                return 0;
             }
         }
         /* we can probably just add this one lit to the previous run */
@@ -165,34 +175,34 @@ void appendWAH(word_32 *addTo, word_32 wordToAdd, int *d)
             /* maxed out so can't consolidate */
             else {
                 addTo[++(*d)] = wordToAdd; /* save into the next spot */
-                return;
+                return 0;
             }
         }
         else { /* can't consolidate */
             addTo[++(*d)] = wordToAdd;
-            return;
+            return 0;
         }
     }
     else if (prevT == ZERO_LIT) {
         if (addT == ZERO_LIT) { /* consolidate two literals into one fill */
             addTo[(*d)] = getZeroFill(BASE_LEN);
-            return;
+            return 0;
         }
         else if (addT == ZERO_RUN) {
             /* not maxed out yet, so add it */
             if (wordToAdd < getMaxZeroFill(BASE_LEN)) {
                 addTo[(*d)] = wordToAdd + 1;
-                return;
+                return 0;
             }
             else { /* maxed out */
                 addTo[(*d) + 1] = addTo[(*d)];
                 addTo[(*d)++] = wordToAdd;
-                return;
+                return 0;
             }
         }
         else { /* can't consolidate */
             addTo[++(*d)] = wordToAdd;
-            return;
+            return 0;
         }
     }
     else if (prevT == ONE_RUN) {
@@ -207,7 +217,7 @@ void appendWAH(word_32 *addTo, word_32 wordToAdd, int *d)
                 wordToAdd--;
             }
             if (wordToAdd == minCheck) {
-                return; /* successfully added everything to previous */
+                return 0; /* successfully added everything to previous */
             }
             else { /* ran out of space */
                 /* there was exactly one left so switch to literal
@@ -216,29 +226,29 @@ void appendWAH(word_32 *addTo, word_32 wordToAdd, int *d)
                     wordToAdd = getZeroFill(BASE_LEN) - 3;
                 }
                 addTo[++(*d)] = wordToAdd;
-                return;
+                return 0;
             }
         }
         else if (addT == ONE_LIT) {
             /* previous isn't maxed out so just add it */
             if (addTo[(*d)] < getMaxOneFill(BASE_LEN)) {
                 addTo[(*d)]++;
-                return;
+                return 0;
             }
             else { /* maxed out so can't consolidate */
                 addTo[++(*d)] = wordToAdd;
-                return;
+                return 0;
             }
         }
         else {
             addTo[++(*d)] = wordToAdd;
-            return;
+            return 0;
         }
     }
     else { /* prev is lit of ones */
         if(addT == ONE_LIT) {
             addTo[(*d)] = getOneFill(BASE_LEN);
-            return;
+            return 0;
         }
         else if (addT == ONE_RUN) {
             if (wordToAdd < getMaxOneFill(BASE_LEN)) { /* not maxed out */
@@ -247,14 +257,15 @@ void appendWAH(word_32 *addTo, word_32 wordToAdd, int *d)
             else { /* maxed out so can't consolidate */
                 addTo[(*d) + 1] = addTo[(*d)];
                 addTo[(*d)++] = wordToAdd;
-                return;
+                return 0;
             }
         }
         else { /* can't consolidate */
             addTo[++(*d)] = wordToAdd;
-            return;
+            return 0;
         }
     }
+    return 0;
 }
 
 word_32

@@ -1,7 +1,7 @@
 #include "../Core.h"
 
 int op_wah(
-    word_32*, word_32*, int, word_32*, int,
+    word_32*, int, word_32*, int, word_32*, int,
     word_32 (*)(word_32, int, word_32*, int*),
     word_32 (*)(word_32*, int*, word_32),
     word_32 (*)(word_32, word_32));
@@ -14,9 +14,9 @@ int op_wah(
  * @param sz0: size of first column
  * @param col1, sz1 similar.
  */
-int OR_WAH(word_32 *ret, word_32 *col0, int sz0, word_32 *col1, int sz1)
+int OR_WAH(word_32 *ret, int explen, word_32 *col0, int sz0, word_32 *col1, int sz1)
 {
-    return op_wah(ret, col0, sz0, col1, sz1, &fillORfillWAH,
+    return op_wah(ret, explen, col0, sz0, col1, sz1, &fillORfillWAH,
         &fillORlitWAH, &litORlitWAH);
 }
 
@@ -28,18 +28,22 @@ int OR_WAH(word_32 *ret, word_32 *col0, int sz0, word_32 *col1, int sz1)
  * @param sz0: size of first column
  * @param col1, sz1 similar.
  */
-int AND_WAH(word_32 *ret, word_32 *col0, int sz0, word_32 *col1, int sz1)
+int AND_WAH(word_32 *ret, int explen, word_32 *col0, int sz0, word_32 *col1, int sz1)
 {
-    return op_wah(ret, col0, sz0, col1, sz1, &fillANDfillWAH,
+    return op_wah(ret, explen, col0, sz0, col1, sz1, &fillANDfillWAH,
         &fillANDlitWAH, &litANDlitWAH);
 }
 
 int op_wah(
-    word_32 *ret, word_32 *col0, int sz0, word_32 *col1, int sz1,
+    word_32 *ret, int explen, word_32 *col0, int sz0, word_32 *col1, int sz1,
     word_32 (*fill_op_fill_wah)(word_32, int, word_32*, int*),
     word_32 (*fill_op_lit_wah)(word_32*, int*, word_32),
     word_32 (*lit_op_lit_wah)(word_32, word_32))
 {
+    if (col0 == NULL || col1 == NULL) {
+        puts("Error: invalid arguments to OP-WAH");
+        return -1;
+    }
     int c0;       /* word number we're scanning from col0 */
     int c1;
     int d;        /* spot we're saving into the result */
@@ -98,7 +102,7 @@ int op_wah(
         /* If this is the first word, append it to the end of the result
          * column. */
         if (d >= 1) {
-            if(appendWAH(ret, toAdd, &d)) {
+            if(appendWAH(ret, explen, toAdd, &d)) {
                 puts("AppendWAH failure");
                 return -1;
             }
@@ -116,21 +120,16 @@ int op_wah(
     return d + 1;
 }
 
-unsigned int veclen(word_32 *v)
-{
-    return sizeof(v) / sizeof(word_32);
-}
-
 /**
  * Adds the wordToAdd to the end (d = last added position) of the addTo sequence
  * wordToAdd will be consolidated into position if possible and if not (or the
  * leftover) will go into ret[d + 1].
  */
-int appendWAH(word_32 *addTo, word_32 wordToAdd, int *d)
+int appendWAH(word_32 *addTo, int explen, word_32 wordToAdd, int *d)
 {
     int prevT = getType(addTo[*d], WORD_LENGTH); /* type of the last added */
     if (prevT == LITERAL) { /* there's no way to consolidate */
-        if (*d > veclen(addTo) - 1) {
+        if (*d > explen) {
             puts("Error: cannot append words.");
             return 1;
         }

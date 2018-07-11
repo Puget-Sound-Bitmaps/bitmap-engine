@@ -36,8 +36,8 @@
 	#else//WAH 64
 		#define WORD_READ_LENGTH 64
 		#define BASE_LEN 63
-		typedef unsigned long long word_32;
-		typedef unsigned long long word_read;
+		typedef u_int64_t word_32;
+		typedef u_int64_t word_read;
 	#endif
 #elif COMPRESSION == VAL
 	#define FLAG_BITS 4
@@ -50,7 +50,7 @@
 	#else // VAL 64
 		#define WORD_READ_LENGTH 16
 		#define BASE_LEN 15
-		typedef unsigned long long word_32;
+		typedef u_int64_t word_32;
 		typedef unsigned short word_read;
 	#endif
 #elif COMPRESSION == BBC //8 bit words

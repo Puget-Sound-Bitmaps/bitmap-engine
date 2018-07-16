@@ -9,6 +9,7 @@ JSOURCE := \
 	$(SRC)/QueryGenerator.java \
 	$(SRC)/WorkloadGenerator.java \
 	$(SRC)/WorkloadMain.java \
+	$(SRC)/Zipf.java
 
 # Set up the output folder and generate the test data.
 all: clean compile run listOut

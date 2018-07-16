@@ -1,6 +1,5 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Random;
 
 /**
@@ -111,7 +110,7 @@ public class QueryGenerator extends WorkloadGenerator
             out.write(metadata());
             out.write(query_set.toString());
             out.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -1,6 +1,5 @@
 import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Arrays;
 
 /**
@@ -63,7 +62,7 @@ public class DataGenerator extends WorkloadGenerator
                 out.flush();
             }
             out.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

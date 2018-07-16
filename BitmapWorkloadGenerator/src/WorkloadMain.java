@@ -1,8 +1,6 @@
-import java.io.IOException;
-
 public class WorkloadMain
 {
-    public static void main(String[] args) throws IOException
+    public static void main(String[] args)
     {
         //*************SET GENERAL VARIABLES
         int num_attributes = 10; // number of attributes

@@ -12,7 +12,7 @@ JSOURCE := \
 	$(SRC)/Zipf.java
 
 # Set up the output folder and generate the test data.
-all: clean compile run listOut
+all: clean compile run
 
 # Empty the bin/ directory if it exists,
 # otherwise make the bin/ directory.
@@ -34,4 +34,18 @@ run:
 # List the generated output files.
 listOut:
 	@echo "Output Files:"
-	@ls $(BIN)/*.txt
+	@ls $(BIN)/*.dat 2> /dev/null
+	@ls $(BIN)/*.txt 2> /dev/null
+
+convert: $(BIN)/mb2sb
+	mkdir -p $(BIN)/vecs
+	cd $(BIN) && ./mb2sb
+
+test-convert: $(BIN)/mb2sb
+	mkdir -p $(BIN)/vecs
+	cd $(BIN) && \
+	valgrind --track-origins=yes --leak-check=full \
+	./mb2sb
+
+$(BIN)/mb2sb: $(SRC)/mb2sb.c
+	gcc -Wall -o $(BIN)/mb2sb $(SRC)/mb2sb.c

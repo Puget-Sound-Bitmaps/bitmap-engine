@@ -20,7 +20,7 @@ public class WorkloadMain {
      *****************/
 
     /** Number of attributes. */
-    public static final int num_attributes = 10000;
+    public static final int num_attributes = 5000;
 
     /** Cardinality (number of bins per attribute). */
     public static final int cardinality = 10;
@@ -48,14 +48,14 @@ public class WorkloadMain {
     public static final int mode = QueryGenerator.MIXED_MODE;
 
     /** Number of queries to generate. */
-    public static final int num_queries = 1000;
+    public static final int num_queries = 10000;
 
     /**
      * The ratio of queries to be point queries.
      * Thus, a value of 0.7 implies queries containing 70% point queries.
      * Only applicable in MIXED_MODE.
      */
-    public static final double query_ratio = 0.7;
+    public static final double query_ratio = 0.5;
 
     /**
      * Skew for which attributes and bins are to be queried.
@@ -71,13 +71,25 @@ public class WorkloadMain {
         data.writeFile(bitmap_out);
 
         // Grey Code-Ordered Bitmaps
-        System.out.println("Generating Grey Code-Ordered Bitmaps");
-        GreyCodeSorter sorter = new GreyCodeSorter(bitmap_out);
-        sorter.writeFile(bitmap_out_gc);
+        // System.out.println("Generating Grey Code-Ordered Bitmaps");
+        // GreyCodeSorter sorter = new GreyCodeSorter(bitmap_out);
+        // sorter.writeFile(bitmap_out_gc);
 
         // Queries
-        System.out.println("Generating Queries");
-        QueryGenerator query = new QueryGenerator(num_attributes, cardinality, num_queries, qry_skew_att, qry_skew_bin);
-        query.writeFile(mode, query_ratio, query_out);
+        QueryGenerator query;
+
+        System.out.println("Generating Point Queries");
+        query = new QueryGenerator(num_attributes, cardinality, num_queries, qry_skew_att, qry_skew_bin);
+        query.writeFile(QueryGenerator.POINT_ONLY, query_ratio, "point.dat");
+
+        // Queries
+        System.out.println("Generating Range Queries");
+        query = new QueryGenerator(num_attributes, cardinality, num_queries, qry_skew_att, qry_skew_bin);
+        query.writeFile(QueryGenerator.RANGE_ONLY, query_ratio, "range.dat");
+
+        // Queries
+        System.out.println("Generating Mixed Queries");
+        query = new QueryGenerator(num_attributes, cardinality, num_queries, qry_skew_att, qry_skew_bin);
+        query.writeFile(QueryGenerator.MIXED_MODE, query_ratio, "mixed.dat");
     }
 }

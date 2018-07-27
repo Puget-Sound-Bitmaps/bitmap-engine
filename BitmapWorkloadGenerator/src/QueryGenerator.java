@@ -107,7 +107,8 @@ public class QueryGenerator extends WorkloadGenerator
         try {
             //write queries to file
             out = new BufferedWriter(new FileWriter(file_out));
-            out.write(metadata());
+            // Do not write metadata...
+            // out.write(metadata());
             out.write(query_set.toString());
             out.close();
         } catch (Exception e) {
@@ -126,6 +127,10 @@ public class QueryGenerator extends WorkloadGenerator
         StringBuilder s = new StringBuilder("R:");
         // choose number of attributes to involve in the query (use zipf(num_attribute))
         int n = zipf_rng_att.next() + 1;
+        if (n > 128) {
+            // Max 128 ranges in distributed system.
+            n = 128;
+        }
         // choose bin_high from each of the K attributes (zipf'(cardinality))
         for (int att_id = 0; att_id < n; att_id++) {
             //a range query from [bin_0, ..., bin_high]
@@ -157,6 +162,10 @@ public class QueryGenerator extends WorkloadGenerator
         StringBuilder s = new StringBuilder("P:");
         // choose number of attributes to involve in the query (use zipf(num_attribute))
         int n = zipf_rng_att.next() + 1;
+        if (n > 1) {
+            // Max 1 point in distributed system.
+            n = 128;
+        }
         // choose one bin from each of the K attributes (use zipf(cardinality))
         for (int att_id = 0; att_id < n; att_id++) {
             //skip to the offset for a randomly chosen bin, set the bit to 1

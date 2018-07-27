@@ -26,7 +26,7 @@ public class WorkloadMain {
     public static final int cardinality = 10;
 
     /** Number of rows. */
-    public static final int num_rows = 1048576;
+    public static final int num_rows = 1000000;
 
     /**
      * Skew for which bins are chosen to be favored with a 1.

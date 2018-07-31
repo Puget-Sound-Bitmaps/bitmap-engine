@@ -164,7 +164,7 @@ public class QueryGenerator extends WorkloadGenerator
         int n = zipf_rng_att.next() + 1;
         if (n > 1) {
             // Max 1 point in distributed system.
-            n = 128;
+            n = 1;
         }
         // choose one bin from each of the K attributes (use zipf(cardinality))
         for (int att_id = 0; att_id < n; att_id++) {

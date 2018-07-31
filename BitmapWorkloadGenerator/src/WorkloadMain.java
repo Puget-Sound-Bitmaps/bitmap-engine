@@ -20,7 +20,7 @@ public class WorkloadMain {
      *****************/
 
     /** Number of attributes. */
-    public static final int num_attributes = 5000;
+    public static final int num_attributes = 100;
 
     /** Cardinality (number of bins per attribute). */
     public static final int cardinality = 10;
@@ -65,16 +65,6 @@ public class WorkloadMain {
     public static final int qry_skew_bin = 2;
 
     public static void main(String[] args) {
-        // Bitmaps
-        System.out.println("Generating Bitmaps");
-        DataGenerator data = new DataGenerator(num_attributes, cardinality, data_skew, num_rows);
-        data.writeFile(bitmap_out);
-
-        // Grey Code-Ordered Bitmaps
-        // System.out.println("Generating Grey Code-Ordered Bitmaps");
-        // GreyCodeSorter sorter = new GreyCodeSorter(bitmap_out);
-        // sorter.writeFile(bitmap_out_gc);
-
         // Queries
         QueryGenerator query;
 
@@ -91,5 +81,15 @@ public class WorkloadMain {
         System.out.println("Generating Mixed Queries");
         query = new QueryGenerator(num_attributes, cardinality, num_queries, qry_skew_att, qry_skew_bin);
         query.writeFile(QueryGenerator.MIXED_MODE, query_ratio, "mixed.dat");
+
+        // Bitmaps
+        // System.out.println("Generating Bitmaps");
+        // DataGenerator data = new DataGenerator(num_attributes, cardinality, data_skew, num_rows);
+        // data.writeFile(bitmap_out);
+
+        // Grey Code-Ordered Bitmaps
+        // System.out.println("Generating Grey Code-Ordered Bitmaps");
+        // GreyCodeSorter sorter = new GreyCodeSorter(bitmap_out);
+        // sorter.writeFile(bitmap_out_gc);
     }
 }

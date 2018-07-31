@@ -12,7 +12,7 @@ JSOURCE := \
 	$(SRC)/Zipf.java
 
 # Set up the output folder and generate the test data.
-all: clean compile run convert
+all: clean compile run
 
 # Empty the bin/ directory if it exists,
 # otherwise make the bin/ directory.

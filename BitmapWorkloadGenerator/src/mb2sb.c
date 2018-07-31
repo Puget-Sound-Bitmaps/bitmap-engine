@@ -13,10 +13,11 @@ int main(int argc, char const *argv[])
     long int row = 0;
     long int vector = 0;
     long int word_len = 64;
-    long int num_rows = 1048576;
-    long int num_vecs = 50000;
+    long int num_rows = 7273799;
+    long int num_vecs = 1367;
 
-    char inputfile[] = "bitmap_out.txt";
+    // char inputfile[] = "bitmap_out.txt";
+    char inputfile[] = "10GB_BPA_Bitmap.txt";
 
     char fileform[] = "vecs/v_%d.dat";
     char filename[16];
@@ -24,7 +25,7 @@ int main(int argc, char const *argv[])
     char hexform[] = "0x%016lx\n";
     memset(filename, '\0', 16);
     char *line = NULL;
-    char *line_ptr = NULL;
+    char *token = NULL;
     char **vec_buf = malloc(sizeof(char *) * num_vecs);
 
     FILE **vec_out = malloc(sizeof(FILE *) * 50000);
@@ -59,10 +60,18 @@ int main(int argc, char const *argv[])
     {
         getline(&line, &line_length, input);
 
+        // printf("%s\n", line);
+
+        token = NULL;
+        token = strtok(line, ",");
+        token = strtok(NULL, ",");
+
+        // printf("%s\n", token);
+
         for (vector = 0; vector < num_vecs; ++vector)
         {
             // Grab value
-            vec_buf[vector][row % word_len] = line_ptr[vector];
+            vec_buf[vector][row % word_len] = token[vector];
 
             // If the buffer is full, convert to number and write to file.
             if ((row + 1) % word_len == 0)
@@ -73,7 +82,7 @@ int main(int argc, char const *argv[])
             }
         }
 
-        if (row % word_len == 0)
+        if (row % 10000 == 0)
             printf("Finished line %ld.\n", row);
     }
 
